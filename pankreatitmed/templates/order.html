@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/styles/app.css"/>
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/services?order_id={{.OrderID}}">Домой</a>
+    <span class="cart">Заявки</span>
+</header>
+
+<section class="order-head">
+    <h2>{{.Order.ComputedResult}}</h2>
+</section>
+
+<main class="order-list">
+    {{range .Order.Items}}
+    {{ $svc := index $.ServicesMap .ServiceID }}
+    <article class="order-item">
+        <div class="idx">{{.Index}}</div>
+        <div class="info">
+            <div class="code">{{$svc.Code}}</div>
+            <div class="title">{{$svc.Name}}</div>
+            <div class="muted">{{$svc.Duration}}</div>
+            <div class="price">{{if eq $svc.PriceRUB 0}}Бесплатно{{else}}{{$svc.PriceRUB}} ₽{{end}}</div>
+        </div>
+        <div class="pic"><img src="{{$svc.ImageURL}}" alt="{{$svc.Name}}"></div>
+        <div class="mm-field"><span class="pill">{{.MMField}}</span></div>
+    </article>
+    {{end}}
+</main>
+
+<footer class="footer">
+    <small>OrderID: {{.OrderID}}</small>
+</footer>
+</body>
+</html>

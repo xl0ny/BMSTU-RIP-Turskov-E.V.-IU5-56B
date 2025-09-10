@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/styles/app.css"/>
+</head>
+<body>
+<body>
+<header class="topbar">
+    <a class="brand" href="/services?order_id={{.OrderID}}">Домой</a>
+    <a class="cart" href="/order?id={{.OrderID}}">Заявки</a>
+</header>
+
+<main class="detail">
+    <div class="detail-text">
+        <h1>{{.Service.Name}}</h1>
+        <div class="muted">{{.Service.Duration}}</div>
+        {{if .Service.HomeVisit}}<div class="muted">Доступно с выездом на дом</div>{{end}}
+
+        <p>{{.Service.Description}}</p>
+        <p><b>Стоимость исследования:</b>
+            {{if eq .Service.PriceRUB 0}}<span class="price">Бесплатно</span>{{else}}<span class="price">{{.Service.PriceRUB}} ₽</span>{{end}}
+        </p>
+    </div>
+    <div class="detail-image">
+        <img src="{{.Service.ImageURL}}" alt="{{.Service.Name}}">
+    </div>
+</main>
+</body>
+</html>
