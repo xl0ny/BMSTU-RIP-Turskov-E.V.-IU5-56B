@@ -1,104 +1,279 @@
-/* === Borrowed from <popular resource name> ===
-- Цвета (пример): primary #00B6D4, accent #FF7A1A, ink #111
-- Карточка: округление 8px, тонкая голубая рамка, тень при hover
-- Кнопка: бирюзовая заливка, скругление pill, hover – затемнение
-(замени на точные коды из твоей Figma!)
-*/
-
-:root{
+:root {
     --primary: #08C3DC;
-    --accent:  #F2813F;
-    --ink:     #111111;
-    --muted:   #6b7280;
-    --border:  #dbeafe;
-    --bg:      #ffffff;
+    --accent: #F2813F;
+    --ink: #111111;
+    --muted: #6b7280;
+    --border: #dbeafe;
+    --bg: #ffffff;
 }
 
-*{box-sizing:border-box}
-body{margin:0;font-family:'Helvetica Neue',Arial;color:var(--ink);background:var(--bg)}
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial;
+    color: var(--ink);
+    background: var(--bg)
+}
 
 
 .brand img.logo {
-    height: 24px;     /* фиксируем высоту */
-    width: auto;      /* ширина пропорционально */
-    display: block;   /* убирает лишние отступы снизу */
+    height: 24px;
+    width: auto;
+    display: block;
     margin-top: 8px;
 }
-.topbar{
-    display:flex;gap:16px;align-items:center;justify-content:space-between;
-    padding:12px 20px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;
+
+.topbar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    position: sticky;
+    top: 0;
     z-index: 1000;
 }
-.brand{font-weight:800;height: 40px;text-decoration:none;color:var(--primary)}
-.brand span{color:#0b0b0b}
-.search input[type="text"]{padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;min-width:1000px}
-.search button{padding:8px 14px;border:0;border-radius:8px;background:var(--primary);color:#fff;cursor:pointer}
-.search button:hover{filter:brightness(0.9)}
-.cart{color:#0b0b0b;text-decoration:none}
-.badge{background:var(--primary);color:#fff;border-radius:999px;padding:2px 8px;margin-left:6px}
 
-.grid{
-    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1080px;margin:24px auto
+.brand {
+    font-weight: 800;
+    height: 40px;
+    text-decoration: none;
+    color: var(--primary)
 }
-/* Карточка — рамка, скругление, тень на hover */
-.card{
+
+.brand span {
+    color: #0b0b0b
+}
+
+.search input[type="text"] {
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    min-width: 1000px
+}
+
+.search button {
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #0097B3;
+    color: #fff;
+    cursor: pointer
+}
+
+.search button:hover {
+    filter: brightness(0.9)
+}
+
+.cart {
+    color: #0b0b0b;
+    text-decoration: none;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    background: url("http://127.0.0.1:9000/services-images/Shopping Bag Icon.png") no-repeat center center;
+    background-size: contain;
+}
+
+.badge {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    max-width: 1080px;
+    margin: 24px auto
+}
+
+.card {
     position: relative;
-    border:1px solid var(--border);
-    border-radius:1px;
-    padding:20px 28px;
-    background:#fff;
-    transition:.2s box-shadow, .2s transform;
+    border: 1px solid var(--border);
+    border-radius: 1px;
+    padding: 20px 28px;
+    background: #fff;
+    transition: .2s box-shadow, .2s transform;
 }
-.card:hover{box-shadow:0 10px 24px rgba(0,0,0,.06); transform: translateY(-1px);}
+
+.card:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .06);
+    transform: translateY(-1px);
+}
 
 /* Номер услуги сверху слева */
-.card .code{
-    color:#658692;
-    font-size:14px;
-    margin-bottom:6px;
+.card .code {
+    color: #658692;
+    font-size: 14px;
+    margin-bottom: 6px;
 }
 
 /* Заголовок и muted-подзаголовки */
-.card .title{margin:6px 0 8px}
-.card .title a{color:var(--ink); text-decoration:none; font-weight:700;}
-.card .title a:hover{opacity:.9}
-.card .meta{color:var(--muted); font-size:14px; display:flex; flex-direction:column; gap:2px;}
+.card .title {
+    margin: 6px 0 8px
+}
+
+.card .title a {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.card .title a:hover {
+    opacity: .9
+}
+
+.card .meta {
+    color: var(--muted);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
 /* Крупная иконка слева */
-.card-illustration{margin:12px 0 48px;}
-.card-illustration img{
-    width:120px; height:120px; object-fit:contain;
-    display:block;
+.card-illustration {
+    margin: 12px 0 48px;
+}
+
+.card-illustration img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    display: block;
 }
 
 /* Низ карточки: цена слева, кнопка справа */
-.card .price{
-    position:absolute; left:16px; bottom:16px;
-    color:var(--accent); font-size:18px; font-weight:600;
+.card .price {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 600;
     font-family: Arial, sans-serif;
     font-weight: normal;
 }
-.card .actions{
-    position:absolute; right:16px; bottom:16px;
+
+.card .actions {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
 }
-.btn{display:inline-block; background:var(--primary); color:#fff;
-    text-decoration:none; padding:10px 18px; border-radius:999px;}
-.btn:hover{filter:brightness(.9)}
-.title{margin:10px 0}
-.meta{color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:2px}
-.price{color:var(--accent);margin:8px 0}
-.btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;padding:8px 12px;border-radius:999px}
-.btn:hover{filter:brightness(.9)}
 
-.detail{max-width:1100px;margin:24px auto;display:grid;grid-template-columns:1fr 420px;gap:24px}
-.detail-image img{width:100%;height:auto;border-radius:8px}
-.muted{color:var(--muted)}
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 999px;
+}
 
-.order-head{text-align:center;margin-top:16px}
-.order-list{max-width:960px;margin:20px auto;display:flex;flex-direction:column;gap:16px}
-.order-item{border:1px solid var(--border);border-radius:10px;padding:16px;display:grid;grid-template-columns:40px 1fr 120px 160px;gap:12px;align-items:center}
-.order-item .idx{font-weight:700;text-align:center}
-.order-item .pic img{width:80px;height:80px;object-fit:contain}
-.pill{display:inline-block;padding:6px 10px;border-radius:10px;background:#f3f4f6}
+.btn:hover {
+    filter: brightness(.9)
+}
 
-.footer{max-width:1080px;margin:40px auto 20px;color:var(--muted)}
+.title {
+    margin: 10px 0
+}
+
+.meta {
+    color: var(--muted);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px
+}
+
+.price {
+    color: var(--accent);
+    margin: 8px 0
+}
+
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px
+}
+
+.btn:hover {
+    filter: brightness(.9)
+}
+
+.detail {
+    max-width: 1100px;
+    margin: 24px auto;
+    display: grid;
+    grid-template-columns:1fr 420px;
+    gap: 24px
+}
+
+.detail-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px
+}
+
+.muted {
+    color: var(--muted)
+}
+
+.order-head {
+    text-align: center;
+    margin-top: 16px
+}
+
+.order-list {
+    max-width: 960px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+}
+
+.order-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns:40px 1fr 120px 160px;
+    gap: 12px;
+    align-items: center
+}
+
+.order-item .idx {
+    font-weight: 700;
+    text-align: center
+}
+
+.order-item .pic img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain
+}
+
+.pill {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #f3f4f6
+}
+
+.footer {
+    max-width: 1080px;
+    margin: 40px auto 20px;
+    color: var(--muted)
+}

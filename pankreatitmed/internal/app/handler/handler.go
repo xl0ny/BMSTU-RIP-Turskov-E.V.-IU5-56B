@@ -20,7 +20,7 @@ func NewHandler(repo *repository.Repository, tplDir string) *Handler {
 
 type ServicesPageVM struct {
 	Title     string
-	Query     string // значение поискового input (сохранится)
+	Query     string
 	OrderID   string
 	CartCount int
 	Services  []repository.Service
@@ -33,10 +33,9 @@ type ServicePageVM struct {
 }
 
 type OrderPageVM struct {
-	Title   string
-	OrderID string
-	Order   repository.Order
-	// для удобства можно подтянуть данные услуг по id
+	Title       string
+	OrderID     string
+	Order       repository.Order
 	ServicesMap map[int]repository.Service
 }
 
@@ -44,7 +43,7 @@ func (h *Handler) ServicesPage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	oid := r.URL.Query().Get("order_id")
 	if oid == "" {
-		oid = h.Repo.Order.ID // по умолчанию
+		oid = h.Repo.Order.ID
 	}
 	vm := ServicesPageVM{
 		Title:     "Услуги — PANKREATITMED",
@@ -81,7 +80,6 @@ func (h *Handler) OrderPage(w http.ResponseWriter, r *http.Request) {
 	if oid == "" {
 		oid = h.Repo.Order.ID
 	}
-	// карта услуг по id для быстрых подписей/картинок в шаблоне
 	mp := map[int]repository.Service{}
 	for _, s := range h.Repo.Services {
 		mp[s.ID] = s

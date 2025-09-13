@@ -16,7 +16,7 @@
         <input type="text" name="q" placeholder="Поиск услуг" value="{{.Query}}">
         <button type="submit">Найти</button>
     </form>
-    <a class="cart" href="/order?id={{.OrderID}}">Заявки <span class="badge">{{.CartCount}}</span></a>
+    <a class="cart" href="/order?id={{.OrderID}}"><span class="badge">{{.CartCount}}</span></a>
 </header>
 
 <main class="grid">
@@ -41,9 +41,9 @@
             {{if eq .PriceRUB 0}}Бесплатно{{else}}{{.PriceRUB}} ₽{{end}}
         </div>
 
-        <div class="actions">
-            <a class="btn" href="/service?id={{.ID}}&order_id={{$.OrderID}}">В корзину</a>
-        </div>
+<!--        <div class="actions">-->
+<!--            <a class="btn" href="/service?id={{.ID}}&order_id={{$.OrderID}}">В корзину</a>-->
+<!--        </div>-->
     </article>
     {{end}}
 </main>

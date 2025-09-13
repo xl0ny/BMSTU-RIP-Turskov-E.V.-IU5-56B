@@ -12,8 +12,6 @@ import (
 func main() {
 	minioBase := os.Getenv("MINIO_PUBLIC_URL")
 	if minioBase == "" {
-		// В ЛР1 можно так: положить картинки в публичный бакет и указать его URL.
-		// Во время защиты показать, что это именно адрес MinIO.
 		minioBase = "http://127.0.0.1:9000/services-images"
 	}
 	repo := repository.NewRepository(minioBase)

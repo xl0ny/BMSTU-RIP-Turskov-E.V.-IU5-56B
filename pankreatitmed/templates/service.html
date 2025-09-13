@@ -5,11 +5,12 @@
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/styles/app.css"/>
 </head>
-<body>
-<body>
 <header class="topbar">
-    <a class="brand" href="/services?order_id={{.OrderID}}">Домой</a>
-    <a class="cart" href="/order?id={{.OrderID}}">Заявки</a>
+    <a class="brand" href="/services?order_id={{.OrderID}}">
+        <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
+             alt="PankreatitMed Logo" class="logo">
+    </a>
+    <a class="cart" href="/order?id={{.OrderID}}"></a>
 </header>
 
 <main class="detail">
