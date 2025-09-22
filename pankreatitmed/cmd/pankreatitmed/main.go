@@ -18,7 +18,7 @@ func main() {
 	h := handler.NewHandler(repo, "templates")
 	s := api.NewServer(h)
 
-	log.Println("Listening on http://localhost:8080/services")
+	log.Println("Listening on http://localhost:8080/criteria")
 	if err := s.Start(":8080"); err != nil {
 		log.Fatal(err)
 	}

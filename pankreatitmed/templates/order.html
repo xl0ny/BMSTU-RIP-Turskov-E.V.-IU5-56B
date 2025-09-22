@@ -7,36 +7,41 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/services?order_id={{.OrderID}}">
+    <a class="brand" href="/criteria?order_id={{.OrderID}}">
         <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
              alt="PankreatitMed Logo" class="logo">
     </a>
-    <span class="cart"></span>
 </header>
 
 <section class="order-head">
     <h2>{{.Order.ComputedResult}}</h2>
 </section>
+<section class="selection">
+    <select id="criterion" name="criterion">
+    <option value="" selected>Выберите пациента…</option>
+    <option value="age">Дмитрий Ицков 18.01.2025</option>
+    <option value="wbc">Армен Игнашеив 15.07.2025</option>
+    <option value="glucose">Аркадий Новичков 27.10.2025</option>
+    </select>
+</section>
+
 
 <main class="order-list">
     {{range .Order.Items}}
-    {{ $svc := index $.ServicesMap .ServiceID }}
+    {{ $svc := index $.CriteriaMap .CriterionID }}
     <article class="order-item">
         <div class="idx">{{.Index}}</div>
-        <div class="info">
-            <div class="code">{{$svc.Code}}</div>
-            <div class="title">{{$svc.Name}}</div>
-            <div class="muted">{{$svc.Duration}}</div>
-            <div class="price">{{if eq $svc.PriceRUB 0}}Бесплатно{{else}}{{$svc.PriceRUB}} ₽{{end}}</div>
-        </div>
+        <div class="code">{{$svc.Code}}</div>
+        <div class="title"><strong>{{$svc.Name}}</strong></div>
+        <div class="muted">{{$svc.Duration}}</div>
+        <div class="price">{{$svc.Indicator}}</div>
         <div class="pic"><img src="{{$svc.ImageURL}}" alt="{{$svc.Name}}"></div>
-        <div class="mm-field"><span class="pill">{{.MMField}}</span></div>
+        <input type="text" placeholder="..." class="crit-input">
+        <span class="indicator">1</span>
+        <div class="del"><img src="http://127.0.0.1:9000/services-images/del_button.png"></div>
     </article>
     {{end}}
 </main>
 
-<footer class="footer">
-    <small>OrderID: {{.OrderID}}</small>
-</footer>
 </body>
 </html>

@@ -13,12 +13,10 @@ type Server struct {
 func NewServer(h *handler.Handler) *Server {
 	mux := http.NewServeMux()
 
-	// GET роуты
-	mux.HandleFunc("/services", h.ServicesPage)
-	mux.HandleFunc("/service", h.ServicePage)
+	mux.HandleFunc("/criteria", h.CriteriaPage)
+	mux.HandleFunc("/criterion", h.CriterionPage)
 	mux.HandleFunc("/order", h.OrderPage)
 
-	// статика для CSS
 	fs := http.FileServer(http.Dir("resources"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 

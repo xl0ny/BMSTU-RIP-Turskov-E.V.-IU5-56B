@@ -18,61 +18,61 @@ func NewHandler(repo *repository.Repository, tplDir string) *Handler {
 	return &Handler{Repo: repo, tplBase: tplDir}
 }
 
-type ServicesPageVM struct {
+type CriteriaPageVM struct {
 	Title     string
 	Query     string
 	OrderID   string
 	CartCount int
-	Services  []repository.Service
+	Criteria  []repository.Criterion
 }
 
-type ServicePageVM struct {
-	Title   string
-	OrderID string
-	Service repository.Service
+type CriterionPageVM struct {
+	Title     string
+	OrderID   string
+	Criterion repository.Criterion
 }
 
 type OrderPageVM struct {
 	Title       string
 	OrderID     string
 	Order       repository.Order
-	ServicesMap map[int]repository.Service
+	CriteriaMap map[int]repository.Criterion
 }
 
-func (h *Handler) ServicesPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CriteriaPage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	oid := r.URL.Query().Get("order_id")
 	if oid == "" {
 		oid = h.Repo.Order.ID
 	}
-	vm := ServicesPageVM{
+	vm := CriteriaPageVM{
 		Title:     "Услуги — PANKREATITMED",
 		Query:     q,
 		OrderID:   oid,
 		CartCount: h.Repo.CartCount(),
-		Services:  h.Repo.ListServices(q),
+		Criteria:  h.Repo.ListCriteria(q),
 	}
-	h.render(w, "services.html", vm)
+	h.render(w, "criteria.html", vm)
 }
 
-func (h *Handler) ServicePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CriterionPage(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	oid := r.URL.Query().Get("order_id")
 	if oid == "" {
 		oid = h.Repo.Order.ID
 	}
 	id, _ := strconv.Atoi(idStr)
-	svc := h.Repo.GetServiceByID(id)
+	svc := h.Repo.GetCriterionByID(id)
 	if svc == nil {
 		http.NotFound(w, r)
 		return
 	}
-	vm := ServicePageVM{
-		Title:   svc.Name + " — PANKREATITMED",
-		OrderID: oid,
-		Service: *svc,
+	vm := CriterionPageVM{
+		Title:     svc.Name + " — PANKREATITMED",
+		OrderID:   oid,
+		Criterion: *svc,
 	}
-	h.render(w, "service.html", vm)
+	h.render(w, "criterion.html", vm)
 }
 
 func (h *Handler) OrderPage(w http.ResponseWriter, r *http.Request) {
@@ -80,15 +80,15 @@ func (h *Handler) OrderPage(w http.ResponseWriter, r *http.Request) {
 	if oid == "" {
 		oid = h.Repo.Order.ID
 	}
-	mp := map[int]repository.Service{}
-	for _, s := range h.Repo.Services {
+	mp := map[int]repository.Criterion{}
+	for _, s := range h.Repo.Criteria {
 		mp[s.ID] = s
 	}
 	vm := OrderPageVM{
 		Title:       "Заявка — PANKREATITMED",
 		OrderID:     oid,
 		Order:       h.Repo.Order,
-		ServicesMap: mp,
+		CriteriaMap: mp,
 	}
 	h.render(w, "order.html", vm)
 }
