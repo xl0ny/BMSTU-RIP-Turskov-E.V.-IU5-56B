@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/styles/app.css"/>
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/criteria?order_id={{.OrderID}}">
+        <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
+             alt="PankreatitMed Logo" class="logo">
+    </a>
+    <a class="cart" href="/order?id={{.OrderID}}"></a>
+</header>
+
+<main class="detail">
+    <div class="detail-text">
+        <h1>{{.Criterion.Name}}</h1>
+        <div class="muted">{{.Criterion.Duration}}</div>
+        {{if .Criterion.HomeVisit}}<div class="muted">Доступно с выездом на дом</div>{{end}}
+
+        <p>{{.Criterion.Description}}</p>
+        <p><b>Критерий:</b>
+            <span class="price">{{.Criterion.Indicator}}</span>
+        </p>
+    </div>
+    <div class="detail-image">
+        <img src="{{.Criterion.ImageURL}}" alt="{{.Criterion.Name}}">
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/styles/app.css"/>
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/criteria?order_id={{.OrderID}}">
+        <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
+             alt="PankreatitMed Logo" class="logo">
+    </a>
+</header>
+
+<section class="find_elements">
+    <form class="search" method="GET" action="/criteria">
+    <input type="hidden" name="order_id" value="{{.OrderID}}">
+    <input type="text" name="q" placeholder="Поиск услуг" value="{{.Query}}">
+    <button type="submit">Найти</button>
+</form>
+</section>
+
+<main class="grid">
+    {{range .Criteria}}
+    <article class="card">
+        <div class="code">{{.Code}}</div>
+
+        <h3 class="title">
+            <a href="/criterion?id={{.ID}}&order_id={{$.OrderID}}">{{.Name}}</a>
+        </h3>
+
+        <div class="meta">
+            <div>{{.Duration}}</div>
+            {{if .HomeVisit}}<div>Доступно с выездом на дом</div>{{end}}
+        </div>
+
+        <div class="card-illustration">
+            <img src="{{.ImageURL}}" alt="{{.Name}}">
+        </div>
+
+        <div class="price">
+            {{.Indicator}}
+        </div>
+
+<!--        <div class="actions">-->
+<!--            <a class="btn" href="/service?id={{.ID}}&order_id={{$.OrderID}}">В корзину</a>-->
+<!--        </div>-->
+    </article>
+    {{end}}
+    <a class="cart" href="/order?id={{.OrderID}}"><span class="badge">{{.CartCount}}</span></a>
+</main>
+
+</body>
+</html>
