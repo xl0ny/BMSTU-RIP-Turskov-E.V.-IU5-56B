@@ -74,6 +74,30 @@ services:
       - minio3
       - minio4
 
+
+  ### START DB ###
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: pankreatitmed
+      POSTGRES_USER: pank_user
+      POSTGRES_PASSWORD: pank_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./sql/migrations:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+  ### END DB ###
+
+
 ## По умолчанию в этой конфигурации используется локальный драйвер docker по умолчанию,
 ## Для пользовательских томов замените на конфигурацию драйвера тома.
 volumes:
@@ -85,3 +109,4 @@ volumes:
   data3-2:
   data4-1:
   data4-2:
+  dbdata:
