@@ -7,7 +7,7 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/criteria?order_id={{.OrderID}}">
+    <a class="brand" href="/criteria?med_order_id={{.MedOrderID}}">
         <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
              alt="PankreatitMed Logo" class="logo">
     </a>
@@ -15,7 +15,7 @@
 
 <section class="find_elements">
     <form class="search" method="GET" action="/criteria">
-    <input type="hidden" name="order_id" value="{{.OrderID}}">
+    <input type="hidden" name="med_order_id" value="{{.MedOrderID}}">
     <input type="text" name="q" placeholder="Поиск услуг" value="{{.Query}}">
     <button type="submit">Найти</button>
 </form>
@@ -27,7 +27,7 @@
         <div class="code">{{.Code}}</div>
 
         <h3 class="title">
-            <a href="/criterion?id={{.ID}}&order_id={{$.OrderID}}">{{.Name}}</a>
+            <a href="/criterion?id={{.ID}}&med_order_id={{$.MedOrderID}}">{{.Name}}</a>
         </h3>
 
         <div class="meta">
@@ -40,15 +40,27 @@
         </div>
 
         <div class="price">
-            {{.Indicator}}
+            {{if nzf .RefLow}}
+            >{{printf "%.0f" (valf .RefLow)}}
+            {{else if nzf .RefHigh}}
+            <{{printf "%.0f" (valf .RefHigh)}}
+            {{else}}
+            —
+            {{end}}
+            {{.Unit}}
         </div>
 
-<!--        <div class="actions">-->
-<!--            <a class="btn" href="/service?id={{.ID}}&order_id={{$.OrderID}}">В корзину</a>-->
-<!--        </div>-->
+        <div class="actions">
+            <form method="POST" action="/medorder/add">
+                <input type="hidden" name="criterion_id" value="{{.ID}}">
+                <input type="hidden" name="med_order_id" value="{{$.MedOrderID}}">
+                <input type="hidden" name="q" value="{{$.Query}}">
+                <button class="btn" type="submit">В корзину</button>
+            </form>
+        </div>
     </article>
     {{end}}
-    <a class="cart" href="/order?id={{.OrderID}}"><span class="badge">{{.CartCount}}</span></a>
+    <a class="cart" {{if .CartCount}} href="/medorder?id={{.MedOrderID}}" {{end}}><span class="badge">{{.CartCount}}</span></a>
 </main>
 
 </body>

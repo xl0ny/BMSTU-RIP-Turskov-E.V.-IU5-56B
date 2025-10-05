@@ -341,3 +341,20 @@ body {
     border-color: var(--logo);
     border-radius: 10px;
 }
+
+.button-form {
+    display: flex;
+    justify-content: center;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center; /* по горизонтали */
+    align-items: center;     /* по вертикали */
+    height: 80vh;           /* вся высота окна */
+}
+
+.not-find {
+    padding: 20px;
+    font-size: 20px;
+}

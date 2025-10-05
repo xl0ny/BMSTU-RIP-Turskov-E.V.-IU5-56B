@@ -1,25 +1,49 @@
 package main
 
 import (
-	"log"
-	"os"
+	"fmt"
+	"html/template"
 
-	"pankreatitmed/internal/api"
+	"pankreatitmed/internal/app/config"
+	"pankreatitmed/internal/app/dsn"
 	"pankreatitmed/internal/app/handler"
 	"pankreatitmed/internal/app/repository"
+	"pankreatitmed/internal/pkg"
+
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	minioBase := os.Getenv("MINIO_PUBLIC_URL")
-	if minioBase == "" {
-		minioBase = "http://127.0.0.1:9000/services-images"
+	router := gin.Default()
+	conf, err := config.NewConfig()
+	if err != nil {
+		logrus.Fatalf("error loading config: %v", err)
 	}
-	repo := repository.NewRepository(minioBase)
-	h := handler.NewHandler(repo, "templates")
-	s := api.NewServer(h)
+	router.SetFuncMap(template.FuncMap{
+		// true, если указатель не nil и значение != 0
+		"nzf": func(p *float64) bool { return p != nil && *p != 0 },
 
-	log.Println("Listening on http://localhost:8080/criteria")
-	if err := s.Start(":8080"); err != nil {
-		log.Fatal(err)
+		// безопасно достаём значение (0, если nil)
+		"valf": func(p *float64) float64 {
+			if p == nil {
+				return 0
+			}
+			return *p
+		},
+	})
+	router.LoadHTMLGlob("templates/*")
+
+	postgresString := dsn.FromEnv()
+	fmt.Println(postgresString)
+
+	rep, errRep := repository.New(postgresString)
+	if errRep != nil {
+		logrus.Fatalf("error initializing repository: %v", errRep)
 	}
+
+	hand := handler.NewHandler(rep)
+
+	application := pkg.NewApp(conf, router, hand)
+	application.RunApp()
 }

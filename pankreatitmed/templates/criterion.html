@@ -7,11 +7,11 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/criteria?order_id={{.OrderID}}">
+    <a class="brand" href="/criteria?med_order_id={{.MedOrderID}}">
         <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
              alt="PankreatitMed Logo" class="logo">
     </a>
-    <a class="cart" href="/order?id={{.OrderID}}"></a>
+<!--    <a class="cart" href="/order?id={{.MedOrderID}}"></a>-->
 </header>
 
 <main class="detail">
@@ -22,12 +22,26 @@
 
         <p>{{.Criterion.Description}}</p>
         <p><b>Критерий:</b>
-            <span class="price">{{.Criterion.Indicator}}</span>
+            <span class="price">
+                {{if nzf .Criterion.RefLow}}
+                >{{printf "%.0f" (valf .Criterion.RefLow)}}
+                {{else if nzf .Criterion.RefHigh}}
+                <{{printf "%.0f" (valf .Criterion.RefHigh)}}
+                {{else}}
+                —
+                {{end}}
+                {{.Criterion.Unit}}
+            </span>
         </p>
     </div>
     <div class="detail-image">
         <img src="{{.Criterion.ImageURL}}" alt="{{.Criterion.Name}}">
     </div>
+    <form method="POST" action="/medorder/add">
+        <input type="hidden" name="criterion_id" value="{{.Criterion.ID}}">
+        <input type="hidden" name="med_order_id" value="{{.MedOrderID}}">
+        <button class="btn" type="submit">Добавить в корзину</button>
+    </form>
 </main>
 </body>
 </html>
