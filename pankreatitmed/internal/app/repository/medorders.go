@@ -1,13 +1,27 @@
 package repository
 
 import (
-	"context"
 	"fmt"
-
 	"pankreatitmed/internal/app/ds"
-
-	"gorm.io/gorm/clause"
+	"pankreatitmed/internal/app/dto/request"
+	"time"
 )
+
+func (r *Repository) CountItems(orderID uint) (int64, error) {
+	var cnt int64
+	return cnt, r.db.Model(&ds.MedOrderItem{}).Where("med_order_id = ?", orderID).Count(&cnt).Error
+}
+
+func (r *Repository) IsMedOrderDeleted(MedOrderID uint) (bool, error) {
+	var o ds.MedOrder
+	err := r.db.First(&o, "id = ?", MedOrderID).Error
+	if err == nil {
+		return o.Status == "deleted", nil
+	}
+	return true, err
+}
+
+// ----------------------------------------------------------
 
 func (r *Repository) GetOrCreateDraftMedOrder(creatorID uint) (*ds.MedOrder, error) {
 	var o ds.MedOrder
@@ -18,11 +32,10 @@ func (r *Repository) GetOrCreateDraftMedOrder(creatorID uint) (*ds.MedOrder, err
 	return &o, r.db.Create(&o).Error
 }
 
-func (r *Repository) AddItem(orderID, criterionID uint) error {
-	var lastOI ds.MedOrderItem
-	r.db.Last(&lastOI, "med_order_id = ?", orderID)
-	item := ds.MedOrderItem{MedOrderID: orderID, CriterionID: criterionID, Position: lastOI.Position + 1}
-	return r.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&item).Error
+func (r *Repository) GetMedOrders(status string, start, end time.Time) ([]ds.MedOrder, error) {
+	var orders []ds.MedOrder
+	err := r.db.Where("(created_at >= ? AND created_at < ?) AND status = ?", start, end, status).Find(&orders).Error
+	return orders, err
 }
 
 func (r *Repository) GetMedOrderWithItems(MedOrderID uint) (ds.MedOrder, []ds.MedOrderItem, error) {
@@ -37,13 +50,24 @@ func (r *Repository) GetMedOrderWithItems(MedOrderID uint) (ds.MedOrder, []ds.Me
 	return o, items, nil
 }
 
-func (r *Repository) CountItems(orderID uint) (int64, error) {
-	var cnt int64
-	return cnt, r.db.Model(&ds.MedOrderItem{}).Where("med_order_id = ?", orderID).Count(&cnt).Error
+func (r *Repository) UpdateMedOrder(id uint, order request.UpdateMedOrder) error {
+	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).Updates(order).Error
 }
 
-func (r *Repository) SoftDeleteOrderSQL(ctx context.Context, orderID uint) error {
-	sql := `UPDATE medorders SET status='deleted' WHERE id=$1 AND status<>'deleted'`
+func (r *Repository) FormMedOrder(id uint) error {
+	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).UpdateColumn("formed_at", time.Now()).Error
+}
+
+func (r *Repository) EndOrCancelMedOrder(id, moderator uint, status string) error {
+	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).UpdateColumns(map[string]any{
+		"status":       status,
+		"finished_at":  time.Now(),
+		"moderator_id": moderator,
+	}).Error
+}
+
+func (r *Repository) SoftDeleteOrderSQL(orderID uint) error {
+	sql := `UPDATE medorders SET status='deleted' WHERE id=$1 AND status = 'draft'`
 	tx := r.db.Exec(sql, orderID)
 	if tx.Error != nil {
 		return tx.Error
@@ -52,13 +76,4 @@ func (r *Repository) SoftDeleteOrderSQL(ctx context.Context, orderID uint) error
 		return fmt.Errorf("medorder %d not updated", orderID)
 	}
 	return nil
-}
-
-func (r *Repository) IsMedOrderDeleted(MedOrderID uint) (bool, error) {
-	var o ds.MedOrder
-	err := r.db.First(&o, "id = ?", MedOrderID).Error
-	if err == nil {
-		return o.Status == "deleted", nil
-	}
-	return true, err
 }

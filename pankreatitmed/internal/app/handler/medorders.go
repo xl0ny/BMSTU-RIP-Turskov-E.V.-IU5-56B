@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 
@@ -21,7 +20,6 @@ func (h *Handler) MedOrderAdd(c *gin.Context) {
 		medorderID = int(o.ID)
 	}
 	_ = h.Repository.AddItem(uint(medorderID), uint(criterionID))
-
 	c.Redirect(http.StatusFound, "/criteria?med_order_id="+strconv.Itoa(medorderID)+"&q="+q)
 }
 
@@ -44,7 +42,7 @@ func (h *Handler) MedOrderView(c *gin.Context) {
 			}
 		}
 	}
-	
+
 	r := len(items)
 	o.RansonScore = &r
 	c.HTML(http.StatusOK, "medorder.html", gin.H{
@@ -61,6 +59,6 @@ func (h *Handler) MedOrderView(c *gin.Context) {
 func (h *Handler) MedOrderDelete(c *gin.Context) {
 	idStr := c.PostForm("med_order_id")
 	oid, _ := strconv.Atoi(idStr)
-	_ = h.Repository.SoftDeleteOrderSQL(context.Background(), uint(oid))
+	_ = h.Repository.SoftDeleteOrderSQL(uint(oid))
 	c.Redirect(http.StatusFound, "/criteria")
 }
