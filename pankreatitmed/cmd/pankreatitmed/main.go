@@ -8,6 +8,7 @@ import (
 	"pankreatitmed/internal/app/dsn"
 	"pankreatitmed/internal/app/handler"
 	"pankreatitmed/internal/app/repository"
+	"pankreatitmed/internal/app/services"
 	"pankreatitmed/internal/pkg"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,11 @@ func main() {
 		logrus.Fatalf("error initializing repository: %v", errRep)
 	}
 
-	hand := handler.NewHandler(rep)
+	svcs := services.NewServices(services.Reps{
+		CriteriaRepo: rep,
+	})
+
+	hand := handler.NewHandler(svcs)
 
 	application := pkg.NewApp(conf, router, hand)
 	application.RunApp()

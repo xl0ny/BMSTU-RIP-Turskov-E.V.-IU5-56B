@@ -1,17 +1,15 @@
 package handler
 
 import (
-	"context"
-	"pankreatitmed/internal/app/dto"
-	"pankreatitmed/internal/app/dto/response"
+	"pankreatitmed/internal/app/ds"
+	"pankreatitmed/internal/app/dto/request"
 )
 
-type CriteriaService interface {
-	List(ctx context.Context, q string) dto.List[response.SendCriterion]
-	//Get(ctx context.Context, id uint) (*response.Criterion, error)
-	//Create(ctx context.Context, in request.CreateCriterion) (uint, error)
-	//Update(ctx context.Context, id uint, in request.UpdateCriterion) error
-	//Delete(ctx context.Context, id uint) error
-	//
-	//AddToDraft(ctx context.Context, userID, criterionID uint) error
+type CriteriaRepoPort interface {
+	GetCriteria(q string) ([]ds.Criterion, error)
+	GetCriterionByID(id uint) (*ds.Criterion, error)
+	CreateCriterion(c *ds.Criterion) error
+	UpdateCriterion(id uint, in *request.UpdateCriterion) error
+	DeleteCriterion(id uint) error
+	AddItem(orderID, criterionID uint) error
 }

@@ -1,24 +1,24 @@
 package request
 
 type GetCriterion struct {
-	ID   uint   `json:"id"`
-	Code string `json:"code"`
+	ID   uint   `uri:"id"`
+	Code string `uri:"code" binding:"omitempty"`
 }
 
 type GetCriteria struct {
-	Query string `json:"query"`
+	Query string `form:"query"`
 }
 
 type CreateCriterion struct {
-	Code        string  `json:"code" binding:"required"`
-	Name        string  `json:"name" binding:"required"`
-	Description string  `json:"description" binding:"required"`
-	Duration    string  `json:"duration" binding:"required"`
-	HomeVisit   bool    `json:"home_visit"`
-	Status      string  `json:"status" binding:"omitempty, oneof=active deleted"`
-	Unit        string  `json:"unit"`
-	RefLow      float64 `json:"ref_low"`
-	RefHigh     float64 `json:"ref_high"`
+	Code        *string  `json:"code" binding:"required"`
+	Name        *string  `json:"name" binding:"required"`
+	Description *string  `json:"description" binding:"required"`
+	Duration    *string  `json:"duration" binding:"required"`
+	HomeVisit   *bool    `json:"home_visit"`
+	Status      *string  `json:"status" binding:"omitempty,oneof=active deleted"`
+	Unit        *string  `json:"unit"`
+	RefLow      *float64 `json:"ref_low"`
+	RefHigh     *float64 `json:"ref_high"`
 }
 
 type UpdateCriterion struct {

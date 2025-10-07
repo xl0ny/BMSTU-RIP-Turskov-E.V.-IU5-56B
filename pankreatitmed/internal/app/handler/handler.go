@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"pankreatitmed/internal/app/repository"
+	"pankreatitmed/internal/app/services"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct{ Repository *repository.Repository }
+type Handler struct{ svcs *services.Services }
 
-func NewHandler(r *repository.Repository) *Handler { return &Handler{Repository: r} }
+func NewHandler(svcs *services.Services) *Handler { return &Handler{svcs: svcs} }
 
 func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	//r.GET("/criteria", h.CriteriaList)     // список
@@ -22,12 +22,12 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 		srv := api.Group("/criteria")
 		{
 			srv.GET("", h.CriteriaList)
-			//srv.GET("/:id", h.Criteria.Get)
-			//srv.POST("", h.Criteria.Create)
-			//srv.PUT("/:id", h.Criteria.Update)
-			//srv.DELETE("/:id", h.Criteria.Delete)
+			srv.GET("/:id", h.CriteriaGet)
+			srv.POST("", h.CriteriaCreate)
+			srv.PUT("/:id", h.CriteriaUpdate)
+			srv.DELETE("/:id", h.CriteriaDelete)
 			//srv.POST("/:id/image", h.Criteria.UploadImage)
-			//srv.POST("/:id/add-to-draft", h.Criteria.AddToDraft)
+			srv.POST("/:id/add-to-draft", h.AddCriteriaToDraft)
 		}
 
 		//ord := api.Group("/medorders")

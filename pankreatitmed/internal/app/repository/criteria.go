@@ -31,7 +31,7 @@ func (r *Repository) CreateCriterion(c *ds.Criterion) error {
 	return r.db.Create(c).Error
 }
 
-func (r *Repository) UpdateCriterion(id uint,c *request.UpdateCriterion) error {
+func (r *Repository) UpdateCriterion(id uint, c *request.UpdateCriterion) error {
 	return r.db.Model(&ds.Criterion{}).Where("id = ?", id).Updates(c).Error
 }
 
@@ -46,9 +46,20 @@ func (r *Repository) AddItem(orderID, criterionID uint) error {
 	return r.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&item).Error
 }
 
-//func (r *Repository) AddItem(orderID, criterionID uint) error {
-//	var lastOI ds.MedOrderItem
-//	r.db.Last(&lastOI, "med_order_id = ?", orderID)
-//	item := ds.MedOrderItem{MedOrderID: orderID, CriterionID: criterionID, Position: lastOI.Position + 1}
-//	return r.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&item).Error
-//}
+func (r *Repository) GetSeq() (uint, error) {
+	var nextID int64
+	if err := r.db.Raw(`SELECT nextval('criteria_id_seq')`).Scan(&nextID).Error; err != nil {
+		return 999999, err
+	}
+	return uint(nextID), nil
+}
+
+func (r *Repository) ResetCriterionSequence() error {
+	sql := `
+        SELECT setval(
+            pg_get_serial_sequence('criteria', 'id'),
+            COALESCE((SELECT MAX(id) FROM criteria), 0)
+        )
+    `
+	return r.db.Exec(sql).Error
+}
