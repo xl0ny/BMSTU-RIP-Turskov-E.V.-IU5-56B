@@ -63,3 +63,16 @@ func (r *Repository) ResetCriterionSequence() error {
     `
 	return r.db.Exec(sql).Error
 }
+
+func (r *Repository) GetImageName(critid uint) (string, error) {
+	var item ds.Criterion
+	if err := r.db.Where("id = ?", critid).First(&item).Error; err != nil {
+		return "", err
+	}
+	if item.ImageURL == nil {
+		return "", nil
+	} else {
+		return *item.ImageURL, nil
+	}
+
+}

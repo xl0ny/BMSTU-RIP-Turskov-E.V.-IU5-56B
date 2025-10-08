@@ -1,23 +1,24 @@
 package services
 
 type Services struct {
-	Criteria CriteriaService
-	// Orders  OrdersService
-	// Items   OrderItemsService
-	// Users   UsersService
+	Criteria      CriteriaService
+	MedOrders     MedOrdersService
+	MedOrderItems MedOrderItemsService
+	MedUsers      MedUsersService
 }
 
 type Reps struct {
-	CriteriaRepo CriteriaRepoPort
-	// OrdersRepo  OrdersRepoPort
-	// UsersRepo   UsersRepoPort
+	CriteriaRepo      CriteriaRepoPort
+	MedOrdersRepo     MedOrdersRepoPort
+	MedOrderItemsRepo MedOrderItemsRepoPort
+	MedUsersRepo      MedUsersRepoPort
 }
 
 func NewServices(d Reps) *Services {
 	return &Services{
-		Criteria: NewCriteriaService(d.CriteriaRepo),
-		// Orders:  NewOrdersService(d.OrdersRepo, ...),
-		// Items:   NewOrderItemsService(...),
-		// Users:   NewUsersService(d.UsersRepo),
+		Criteria:      NewCriteriaService(d.CriteriaRepo),
+		MedOrders:     NewMedOrdersService(d.MedOrdersRepo),
+		MedOrderItems: NewMedOrderItemsService(d.MedOrderItemsRepo),
+		MedUsers:      NewMedUsersService(d.MedUsersRepo),
 	}
 }

@@ -2,9 +2,15 @@
 package services
 
 import (
+	"errors"
+	"fmt"
 	"pankreatitmed/internal/app/ds"
 	"pankreatitmed/internal/app/dto/request"
 	"pankreatitmed/internal/app/singleton"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/minio/minio-go/v7"
 )
 
 // минимальный контракт репозитория, НУЖНЫЙ именно этому сервису
@@ -15,7 +21,8 @@ type CriteriaService interface {
 	Create(c *ds.Criterion) error
 	Update(id uint, in *request.UpdateCriterion) error
 	Delete(id uint) error
-	ToDradt(id uint) error
+	ToDraft(id uint) error
+	DeleteImage(client *minio.Client, critID uint, c *gin.Context) error
 }
 
 type criteriaService struct {
@@ -56,11 +63,36 @@ func (s *criteriaService) Delete(id uint) error {
 	return s.repo.DeleteCriterion(id)
 }
 
-func (s *criteriaService) ToDradt(id uint) error {
+func (s *criteriaService) ToDraft(id uint) error {
 	oi, err := s.repo.GetOrCreateDraftMedOrder(singleton.GetCurrentUser().ID)
 	println(oi)
 	if err != nil {
 		return err
 	}
 	return s.repo.AddItem(oi.ID, id)
+}
+
+//func (s *criteriaService) UpdateImage(id uint, in *request.UpdateCriterion) error {
+//
+//}
+
+func (s *criteriaService) DeleteImage(client *minio.Client, critID uint, c *gin.Context) error {
+	objectName, err := s.repo.GetImageName(critID)
+	if objectName == "" || err != nil {
+		return nil
+	}
+	fmt.Println(objectName)
+	if err != nil {
+		return err
+	}
+	parts := strings.SplitN(objectName, "/services-images/", 2)
+	if len(parts) == 2 {
+		objectName := parts[1] // "service_13/IMG_5587.jpeg"
+		return client.RemoveObject(c, "services-images", objectName, minio.RemoveObjectOptions{})
+	} else if len(parts) == 1 {
+		objectName := parts[0] // "service_13/IMG_5587.jpeg"
+		return client.RemoveObject(c, "services-images", objectName, minio.RemoveObjectOptions{})
+	} else {
+		return errors.New("Invalid old image url to delete")
+	}
 }

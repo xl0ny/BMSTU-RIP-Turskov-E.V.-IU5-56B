@@ -21,10 +21,29 @@ func (r *Repository) IsMedOrderDeleted(MedOrderID uint) (bool, error) {
 	return true, err
 }
 
+func (r *Repository) IsMedOrderDraft(MedOrderID uint) (bool, error) {
+	var o ds.MedOrder
+	err := r.db.First(&o, "id = ?", MedOrderID).Error
+	if err == nil {
+		return o.Status == "draft", nil
+	}
+	return true, err
+}
+
+func (r *Repository) IsMedOrderFormed(MedOrderID uint) (bool, error) {
+	var o ds.MedOrder
+	err := r.db.First(&o, "id = ?", MedOrderID).Error
+	if err == nil {
+		return o.Status == "formed", nil
+	}
+	return true, err
+}
+
 // ----------------------------------------------------------
 
 func (r *Repository) GetOrCreateDraftMedOrder(creatorID uint) (*ds.MedOrder, error) {
 	var o ds.MedOrder
+	println("GetOrCreateDraftMedOrder")
 	if err := r.db.Where("creator_id = ? AND status = 'draft'", creatorID).First(&o).Error; err == nil {
 		return &o, nil
 	}
@@ -50,12 +69,15 @@ func (r *Repository) GetMedOrderWithItems(MedOrderID uint) (ds.MedOrder, []ds.Me
 	return o, items, nil
 }
 
-func (r *Repository) UpdateMedOrder(id uint, order request.UpdateMedOrder) error {
+func (r *Repository) UpdateMedOrder(id uint, order *request.UpdateMedOrder) error {
 	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).Updates(order).Error
 }
 
 func (r *Repository) FormMedOrder(id uint) error {
-	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).UpdateColumn("formed_at", time.Now()).Error
+	return r.db.Model(&ds.MedOrder{}).Where("id = ?", id).UpdateColumns(map[string]any{
+		"status":    "formed",
+		"formed_at": time.Now(),
+	}).Error
 }
 
 func (r *Repository) EndOrCancelMedOrder(id, moderator uint, status string) error {
@@ -67,7 +89,8 @@ func (r *Repository) EndOrCancelMedOrder(id, moderator uint, status string) erro
 }
 
 func (r *Repository) SoftDeleteOrderSQL(orderID uint) error {
-	sql := `UPDATE medorders SET status='deleted' WHERE id=$1 AND status = 'draft'`
+	sql := `UPDATE medorders SET status='deleted', formed_at = NOW() WHERE id=$1 AND status = 'draft'`
+
 	tx := r.db.Exec(sql, orderID)
 	if tx.Error != nil {
 		return tx.Error
@@ -76,4 +99,13 @@ func (r *Repository) SoftDeleteOrderSQL(orderID uint) error {
 		return fmt.Errorf("medorder %d not updated", orderID)
 	}
 	return nil
+}
+
+func (r *Repository) SetRansonAndRisk(orderID uint, score int, risk string) error {
+	return r.db.Model(&ds.MedOrder{}).
+		Where("id = ?", orderID).
+		Updates(map[string]interface{}{
+			"ranson_score":   score,
+			"mortality_risk": risk,
+		}).Error
 }

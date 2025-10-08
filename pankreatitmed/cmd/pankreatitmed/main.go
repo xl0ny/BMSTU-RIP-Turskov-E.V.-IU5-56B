@@ -44,7 +44,10 @@ func main() {
 	}
 
 	svcs := services.NewServices(services.Reps{
-		CriteriaRepo: rep,
+		CriteriaRepo:      rep,
+		MedOrdersRepo:     rep,
+		MedOrderItemsRepo: rep,
+		MedUsersRepo:      rep,
 	})
 
 	hand := handler.NewHandler(svcs)

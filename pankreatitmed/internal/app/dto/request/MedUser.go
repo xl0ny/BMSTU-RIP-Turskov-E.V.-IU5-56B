@@ -1,8 +1,8 @@
 package request
 
 type MedUserRegistration struct {
-	Login    string `json:"login" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Login    string `form:"login" binding:"required"`
+	Password string `form:"password" binding:"required"`
 }
 
 type GetMedUser struct {
@@ -10,10 +10,8 @@ type GetMedUser struct {
 }
 
 type UpdateMedUser struct {
-	Login       string `json:"login" binding:"required"`
-	Password    string `json:"password" binding:"required"`
-	NewLogin    string `json:"login" binding:"required"`
-	NewPassword string `json:"password" binding:"required"`
+	Login    *string `json:"login"`
+	Password *string `json:"password"`
 }
 
 type AuthenticateUser struct {

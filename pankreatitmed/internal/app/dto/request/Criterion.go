@@ -26,18 +26,11 @@ type UpdateCriterion struct {
 	Name        *string  `json:"name"`
 	Description *string  `json:"description"`
 	Duration    *string  `json:"duration"`
+	ImageURL    *string  `json:"image_url"`
 	HomeVisit   *bool    `json:"home_visit"`
 	Unit        *string  `json:"unit"`
 	RefLow      *float64 `json:"ref_low"`
 	RefHigh     *float64 `json:"ref_high"`
-}
-
-type DeleteCriterion struct {
-	ID uint `json:"id" binding:"required"`
-}
-
-type AddToDraft struct {
-	ID uint `json:"id" binding:"required"`
 }
 
 type CreateCriterionIamage struct {

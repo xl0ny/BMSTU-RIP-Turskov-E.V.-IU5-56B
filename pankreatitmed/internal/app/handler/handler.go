@@ -11,12 +11,6 @@ type Handler struct{ svcs *services.Services }
 func NewHandler(svcs *services.Services) *Handler { return &Handler{svcs: svcs} }
 
 func (h *Handler) RegisterRoutes(r *gin.Engine) {
-	//r.GET("/criteria", h.CriteriaList)     // список
-	//r.GET("/criterion", h.CriterionDetail) // деталка
-	//r.GET("/medorder", h.MedOrderView)     // заявка
-	//
-	//r.POST("/medorder/add", h.MedOrderAdd)       // ORM
-	//r.POST("/medorder/delete", h.MedOrderDelete) // SQL UPDATE
 	api := r.Group("/api")
 	{
 		srv := api.Group("/criteria")
@@ -26,33 +20,32 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 			srv.POST("", h.CriteriaCreate)
 			srv.PUT("/:id", h.CriteriaUpdate)
 			srv.DELETE("/:id", h.CriteriaDelete)
-			//srv.POST("/:id/image", h.Criteria.UploadImage)
+			srv.POST("/:id/image", h.UploadCriterionImage)
 			srv.POST("/:id/add-to-draft", h.AddCriteriaToDraft)
 		}
 
-		//ord := api.Group("/medorders")
-		//{
-		//	ord.GET("", h.Orders.CartIcon)
-		//	ord.GET("", h.Orders.List)
-		//	ord.GET("/:id", h.Orders.Get)
-		//	ord.PUT("/:id", h.Orders.Update)
-		//	ord.PUT("/:id/form", h.Orders.Form)
-		//	ord.PUT("/:id/complete", h.Orders.Complete)
-		//	ord.PUT("/:id/reject", h.Orders.Reject)
-		//	ord.DELETE("/:id", h.Orders.Delete)
-		//
-		//	ord.PUT("/:id/items", h.OrderItems.Upsert)
-		//	ord.DELETE("/:id/items", h.OrderItems.Delete)
-		//}
-		//
-		//auth := api.Group("/users")
-		//{
-		//	auth.POST("auth/register", h.Users.Register)
-		//	auth.POST("auth/login", h.Users.Login)
-		//	auth.POST("auth/logout", h.Users.Logout)
-		//	auth.GET("me", h.Users.Me)
-		//	auth.PUT("me", h.Users.UpdateMe)
-		//}
+		ord := api.Group("/medorders")
+		{
+			ord.GET("/cart", h.OrderFromCart)
+			ord.GET("", h.ListOrders)
+			ord.GET(":id", h.OrderGet)
+			ord.PUT("/:id", h.MedOrderUpdate)
+			ord.PUT("/:id/form", h.MedOrderForm)
+			ord.PUT("/:id/set/:status", h.OrderComplete)
+			ord.DELETE("/:id", h.OrderDelete)
+
+			ord.DELETE("/items", h.DeleteOrderItem)
+			ord.PUT("/items", h.UpdateOrderItem)
+		}
+
+		auth := api.Group("/users")
+		{
+			auth.POST("auth/register", h.MedUserRegistation)
+			auth.GET("me", h.MedUserGetFields)
+			auth.PUT("me", h.MedUserUpdateFields)
+			auth.POST("auth/login", h.MedUserLogIn)
+			auth.POST("auth/logout", h.MedUserLogOut)
+		}
 	}
 }
 
