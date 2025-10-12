@@ -91,6 +91,7 @@ func (h *Handler) CriteriaUpdate(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// TODO перенести удаления изображения в services, сделать проверку на дублирующие изображения, чтобы не удалять, если у 1-го 2 изображения
 func (h *Handler) CriteriaDelete(c *gin.Context) {
 	var id request.GetCriterion
 	if err := c.ShouldBindUri(&id); err != nil {
@@ -118,6 +119,9 @@ func (h *Handler) AddCriteriaToDraft(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
+
+// TODO сделать проверку на существовние критерия (если его нет, все равно добавляет изображение)
+// TODO если картинка уже есть и меняешь, в минио админе почему то изображение не отображается, хотя по ссылке оно висит
 
 func (h *Handler) UploadCriterionImage(c *gin.Context) {
 	// ID услуги из URL
@@ -160,9 +164,11 @@ func (h *Handler) UploadCriterionImage(c *gin.Context) {
 	fmt.Println(crit.ImageURL)
 	if err := h.svcs.Criteria.DeleteImage(client, id.ID, c); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	if err := h.svcs.Criteria.Update(id.ID, &crit); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{

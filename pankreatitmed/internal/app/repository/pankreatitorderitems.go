@@ -3,6 +3,8 @@ package repository
 import (
 	"fmt"
 	"pankreatitmed/internal/app/ds"
+
+	"gorm.io/gorm"
 )
 
 func (r *Repository) DeleteFromPankreatitOrder(pankreatitorder, criterion uint) error {
@@ -22,8 +24,16 @@ func (r *Repository) UpdatePankreatitOrderItem(pankreatitorder, criterion uint, 
 	if len(updates) == 0 {
 		return nil
 	}
-
-	return r.db.Model(&ds.PankreatitOrderItem{}).
+	fmt.Println(updates, criterion, pankreatitorder)
+	tx := r.db.Model(&ds.PankreatitOrderItem{}).
 		Where("pankreatit_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).
-		Updates(updates).Error
+		Updates(updates)
+
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }

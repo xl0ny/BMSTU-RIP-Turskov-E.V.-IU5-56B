@@ -22,7 +22,7 @@ func (r *Repository) GetCriterionByID(id uint) (*ds.Criterion, error) {
 	var c ds.Criterion
 	err := r.db.First(&c, id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		return nil, gorm.ErrRecordNotFound
 	}
 	return &c, err
 }
@@ -32,13 +32,28 @@ func (r *Repository) CreateCriterion(c *ds.Criterion) error {
 }
 
 func (r *Repository) UpdateCriterion(id uint, c *request.UpdateCriterion) error {
-	return r.db.Model(&ds.Criterion{}).Where("id = ?", id).Updates(c).Error
+	tx := r.db.Model(&ds.Criterion{}).Where("id = ?", id).Updates(c)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (r *Repository) DeleteCriterion(id uint) error {
-	return r.db.Delete(&ds.Criterion{}, id).Error
+	tx := r.db.Delete(&ds.Criterion{}, id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
+// TODO нормальную ошибку кидать, а не пойми что
 func (r *Repository) AddItem(orderID, criterionID uint) error {
 	var lastOI ds.PankreatitOrderItem
 	r.db.Last(&lastOI, "med_order_id = ?", orderID)
