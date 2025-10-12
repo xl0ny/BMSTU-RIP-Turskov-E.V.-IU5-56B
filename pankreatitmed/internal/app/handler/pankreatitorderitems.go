@@ -7,20 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) DeleteOrderItem(c *gin.Context) {
-	var item request.GetMedOrderItem
+func (h *Handler) DeletePankreatitOrderItem(c *gin.Context) {
+	var item request.GetPankreatitOrderItem
 	if err := c.ShouldBindQuery(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	if err := h.svcs.MedOrderItems.Delete(item.MedOrderID, item.CriterionID); err != nil {
+	if err := h.svcs.PankreatitOrderItems.Delete(item.MedOrderID, item.CriterionID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
-func (h *Handler) UpdateOrderItem(c *gin.Context) {
-	var item request.GetMedOrderItem
-	var fields request.MedOrderItemUpdate
+func (h *Handler) UpdatePankreatitOrderItem(c *gin.Context) {
+	var item request.GetPankreatitOrderItem
+	var fields request.PankreatitOrderItemUpdate
 	if err := c.ShouldBindQuery(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -29,7 +29,7 @@ func (h *Handler) UpdateOrderItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.svcs.MedOrderItems.Update(item.MedOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {
+	if err := h.svcs.PankreatitOrderItems.Update(item.MedOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

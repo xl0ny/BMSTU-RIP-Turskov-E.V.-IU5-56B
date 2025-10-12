@@ -15,31 +15,31 @@ type CriteriaRepoPort interface {
 	AddItem(orderID, criterionID uint) error
 	GetSeq() (uint, error)
 	ResetCriterionSequence() error
-	GetOrCreateDraftMedOrder(creatorID uint) (*ds.MedOrder, error)
+	GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.PankreatitOrder, error)
 	GetImageName(critid uint) (string, error)
 }
 
-type MedOrdersRepoPort interface {
+type PankreatitOrdersRepoPort interface {
 	CountItems(orderID uint) (int64, error)
-	IsMedOrderDeleted(orderID uint) (bool, error)
-	IsMedOrderDraft(orderID uint) (bool, error)
-	IsMedOrderFormed(orderID uint) (bool, error)
+	IsPankreatitOrderDeleted(orderID uint) (bool, error)
+	IsPankreatitOrderDraft(orderID uint) (bool, error)
+	IsPankreatitOrderFormed(orderID uint) (bool, error)
 
-	GetOrCreateDraftMedOrder(creatorID uint) (*ds.MedOrder, error)
-	GetMedOrders(status string, start, end time.Time) ([]ds.MedOrder, error)
-	GetMedOrderWithItems(orderID uint) (ds.MedOrder, []ds.MedOrderItem, error)
+	GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.PankreatitOrder, error)
+	GetPankreatitOrders(status string, start, end time.Time) ([]ds.PankreatitOrder, error)
+	GetPankreatitOrderWithItems(orderID uint) (ds.PankreatitOrder, []ds.PankreatitOrderItem, error)
 
-	UpdateMedOrder(id uint, order *request.UpdateMedOrder) error
-	FormMedOrder(id uint) error
-	EndOrCancelMedOrder(id, moderator uint, status string) error
+	UpdatePankreatitOrder(id uint, order *request.UpdatePankreatitOrder) error
+	FormPankreatitOrder(id uint) error
+	EndOrCancelPankreatitOrder(id, moderator uint, status string) error
 	SoftDeleteOrderSQL(orderID uint) error
 	SetRansonAndRisk(orderID uint, score int, risk string) error
 	GetCriterionByID(id uint) (*ds.Criterion, error)
 }
 
-type MedOrderItemsRepoPort interface {
-	DeleteFromOrder(medorder, criterion uint) error
-	UpdateMedOrderItem(medorder, criterion uint, position *uint, val *float64) error
+type PankreatitOrderItemsRepoPort interface {
+	DeleteFromPankreatitOrder(medorder, criterion uint) error
+	UpdatePankreatitOrderItem(medorder, criterion uint, position *uint, val *float64) error
 }
 
 type MedUsersRepoPort interface {

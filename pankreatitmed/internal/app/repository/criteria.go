@@ -40,9 +40,9 @@ func (r *Repository) DeleteCriterion(id uint) error {
 }
 
 func (r *Repository) AddItem(orderID, criterionID uint) error {
-	var lastOI ds.MedOrderItem
+	var lastOI ds.PankreatitOrderItem
 	r.db.Last(&lastOI, "med_order_id = ?", orderID)
-	item := ds.MedOrderItem{MedOrderID: orderID, CriterionID: criterionID, Position: lastOI.Position + 1}
+	item := ds.PankreatitOrderItem{MedOrderID: orderID, CriterionID: criterionID, Position: lastOI.Position + 1}
 	return r.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&item).Error
 }
 

@@ -2,7 +2,7 @@ package response
 
 import "pankreatitmed/internal/app/ds"
 
-type SendMedOrderItem struct {
+type SendPankreatitOrderItem struct {
 	ID             uint         `json:"id"`
 	CriterionID    uint         `json:"criterion_id"`
 	Criterion      ds.Criterion `json:"criterion"`

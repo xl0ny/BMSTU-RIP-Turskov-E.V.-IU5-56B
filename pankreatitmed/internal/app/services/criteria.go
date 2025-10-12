@@ -64,7 +64,7 @@ func (s *criteriaService) Delete(id uint) error {
 }
 
 func (s *criteriaService) ToDraft(id uint) error {
-	oi, err := s.repo.GetOrCreateDraftMedOrder(singleton.GetCurrentUser().ID)
+	oi, err := s.repo.GetOrCreateDraftPankreatitOrder(singleton.GetCurrentUser().ID)
 	println(oi)
 	if err != nil {
 		return err

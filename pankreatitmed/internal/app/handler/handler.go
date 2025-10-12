@@ -26,16 +26,16 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 
 		ord := api.Group("/medorders")
 		{
-			ord.GET("/cart", h.OrderFromCart)
-			ord.GET("", h.ListOrders)
-			ord.GET(":id", h.OrderGet)
-			ord.PUT("/:id", h.MedOrderUpdate)
-			ord.PUT("/:id/form", h.MedOrderForm)
-			ord.PUT("/:id/set/:status", h.OrderComplete)
-			ord.DELETE("/:id", h.OrderDelete)
+			ord.GET("/cart", h.PankreatitOrderFromCart)
+			ord.GET("", h.ListPankreatitOrders)
+			ord.GET(":id", h.PankreatitOrderGet)
+			ord.PUT("/:id", h.PankreatitOrderUpdate)
+			ord.PUT("/:id/form", h.PankreatitOrderForm)
+			ord.PUT("/:id/set/:status", h.PankreatitOrderComplete)
+			ord.DELETE("/:id", h.PankreatitOrderDelete)
 
-			ord.DELETE("/items", h.DeleteOrderItem)
-			ord.PUT("/items", h.UpdateOrderItem)
+			ord.DELETE("/items", h.DeletePankreatitOrderItem)
+			ord.PUT("/items", h.UpdatePankreatitOrderItem)
 		}
 
 		auth := api.Group("/users")
@@ -49,7 +49,7 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	}
 }
 
-func (h *Handler) RegisterStatic(r *gin.Engine) {
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/static/styles", "./resources/styles")
-}
+//func (h *Handler) RegisterStatic(r *gin.Engine) {
+//	r.LoadHTMLGlob("templates/*")
+//	r.Static("/static/styles", "./resources/styles")
+//}

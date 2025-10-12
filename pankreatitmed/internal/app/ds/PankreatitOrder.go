@@ -10,9 +10,9 @@ const (
 	OrderStatusRejected  = "rejected"
 )
 
-func (MedOrder) TableName() string { return "medorders" }
+func (PankreatitOrder) TableName() string { return "pankreatitorders" }
 
-type MedOrder struct {
+type PankreatitOrder struct {
 	ID            uint      `gorm:"primaryKey"`
 	Status        string    `gorm:"type:varchar(12);not null;check:status IN ('draft','deleted','formed','completed','rejected')"`
 	CreatedAt     time.Time `gorm:"not null;autoCreateTime"`

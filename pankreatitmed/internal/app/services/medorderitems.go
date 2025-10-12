@@ -2,24 +2,24 @@ package services
 
 import "fmt"
 
-type MedOrderItemsService interface {
-	Delete(medorder, criterion uint) error
-	Update(medorder, criterion uint, position *uint, val *float64) error
+type PankreatitOrderItemsService interface {
+	Delete(pankreatitorder, criterion uint) error
+	Update(pankreatitorder, criterion uint, position *uint, val *float64) error
 }
 
-type medOrderItemsService struct {
-	repo MedOrderItemsRepoPort
+type pankreatitOrderItemsService struct {
+	repo PankreatitOrderItemsRepoPort
 }
 
-func NewMedOrderItemsService(repo MedOrderItemsRepoPort) MedOrderItemsService {
-	return &medOrderItemsService{repo: repo}
+func NewPankreatitOrderItemsService(repo PankreatitOrderItemsRepoPort) PankreatitOrderItemsService {
+	return &pankreatitOrderItemsService{repo: repo}
 }
-func (s *medOrderItemsService) Delete(medorder, criterion uint) error {
-	fmt.Println(medorder, criterion)
+func (s *pankreatitOrderItemsService) Delete(pankreatitorder, criterion uint) error {
+	fmt.Println(pankreatitorder, criterion)
 	fmt.Println(s.repo)
-	return s.repo.DeleteFromOrder(medorder, criterion)
+	return s.repo.DeleteFromPankreatitOrder(pankreatitorder, criterion)
 }
 
-func (s *medOrderItemsService) Update(medorder, criterion uint, position *uint, val *float64) error {
-	return s.repo.UpdateMedOrderItem(medorder, criterion, position, val)
+func (s *pankreatitOrderItemsService) Update(pankreatitorder, criterion uint, position *uint, val *float64) error {
+	return s.repo.UpdatePankreatitOrderItem(pankreatitorder, criterion, position, val)
 }
