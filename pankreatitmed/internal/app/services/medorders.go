@@ -75,25 +75,7 @@ func (s *medOrdersService) Form(ID uint) error {
 	if !check {
 		return errors.New("MedOrderIsNotDraft")
 	}
-	_, criteria, err := s.repo.GetMedOrderWithItems(ID)
-	if err != nil {
-		return err
-	}
-	if CheckReadyToForm(criteria) {
-		rans, rsk, err := s.computeRanson(criteria)
-		if err != nil {
-			return err
-		}
-		if err := s.repo.SetRansonAndRisk(ID, rans, rsk); err != nil {
-			return err
-		}
-		if err := s.repo.FormMedOrder(ID); err != nil {
-			return err
-		}
-	} else {
-		return errors.New("Not all value fields are complete")
-	}
-	return nil
+	return s.repo.FormMedOrder(ID)
 }
 
 func (s *medOrdersService) CancelOrEnd(ID, moderator uint, password, status string) error {
@@ -104,10 +86,28 @@ func (s *medOrdersService) CancelOrEnd(ID, moderator uint, password, status stri
 	if !check {
 		return errors.New("MedOrderIsNotFormed")
 	}
-	return s.repo.EndOrCancelMedOrder(ID, moderator, status)
+	_, criteria, err := s.repo.GetMedOrderWithItems(ID)
+	if err != nil {
+		return err
+	}
+	if CheckReadyToCanselOrEnd(criteria) {
+		rans, rsk, err := s.computeRanson(criteria)
+		if err != nil {
+			return err
+		}
+		if err := s.repo.SetRansonAndRisk(ID, rans, rsk); err != nil {
+			return err
+		}
+		if err := s.repo.EndOrCancelMedOrder(ID, moderator, status); err != nil {
+			return err
+		}
+	} else {
+		return errors.New("Not all value fields are complete")
+	}
+	return nil
 }
 
-func CheckReadyToForm(items []ds.MedOrderItem) bool {
+func CheckReadyToCanselOrEnd(items []ds.MedOrderItem) bool {
 	for _, item := range items {
 		if item.ValueNum == nil {
 			return false

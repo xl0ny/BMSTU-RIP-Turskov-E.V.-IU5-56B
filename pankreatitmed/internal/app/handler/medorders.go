@@ -28,7 +28,7 @@ func (h *Handler) ListOrders(c *gin.Context) {
 	fmt.Println(filters.Status, filters.FromDate, filters.ToDate)
 	res, err := h.svcs.MedOrders.List(filters.Status, filters.FromDate, filters.ToDate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, res)
 }
@@ -41,7 +41,7 @@ func (h *Handler) OrderGet(c *gin.Context) {
 	}
 	res, err := h.svcs.MedOrders.Get(id.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
@@ -62,7 +62,7 @@ func (h *Handler) MedOrderUpdate(c *gin.Context) {
 	}
 	fmt.Println(mo.Status)
 	if err := h.svcs.MedOrders.Update(id.ID, &mo); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.Status(http.StatusOK)
 }
@@ -75,7 +75,7 @@ func (h *Handler) MedOrderForm(c *gin.Context) {
 	}
 	err := h.svcs.MedOrders.Form(id.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusOK)
@@ -93,7 +93,7 @@ func (h *Handler) OrderComplete(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.MedOrders.CancelOrEnd(idstatus.ID, moderator.ModeratorID, moderator.Password, idstatus.Status); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.Status(http.StatusOK)
 }
@@ -105,7 +105,7 @@ func (h *Handler) OrderDelete(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.MedOrders.Delete(id.ID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusOK)

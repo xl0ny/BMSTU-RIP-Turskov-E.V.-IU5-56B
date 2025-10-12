@@ -13,7 +13,7 @@ func (h *Handler) DeleteOrderItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	if err := h.svcs.MedOrderItems.Delete(item.MedOrderID, item.CriterionID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
@@ -30,7 +30,7 @@ func (h *Handler) UpdateOrderItem(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.MedOrderItems.Update(item.MedOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})

@@ -14,7 +14,7 @@ func (h *Handler) MedUserRegistation(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.MedUsers.Registrate(user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusCreated)
@@ -35,7 +35,7 @@ func (h *Handler) MedUserUpdateFields(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.MedUsers.UpdateMyField(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(http.StatusCreated)

@@ -48,7 +48,7 @@ func (h *Handler) CriteriaGet(c *gin.Context) {
 	println("id", id.ID)
 	criterion, err := h.svcs.Criteria.Get(id.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	crit := mapper.CritertionToSendCriterionLink(criterion)
 	c.JSON(http.StatusOK, crit)
@@ -64,11 +64,11 @@ func (h *Handler) CriteriaCreate(c *gin.Context) {
 	crit, err := mapper.CreateCriterionToCriterion(criterion)
 	if err != nil {
 		println(2)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	if err := h.svcs.Criteria.Create(&crit); err != nil {
 		println(3)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.Status(http.StatusOK)
 }
@@ -86,7 +86,7 @@ func (h *Handler) CriteriaUpdate(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.Criteria.Update(id.ID, &criterion); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.Status(http.StatusOK)
 }
@@ -98,7 +98,7 @@ func (h *Handler) CriteriaDelete(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.Criteria.Delete(id.ID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	client := connectMinio() // из предыдущего примера
 	if err := h.svcs.Criteria.DeleteImage(client, id.ID, c); err != nil {
@@ -115,7 +115,7 @@ func (h *Handler) AddCriteriaToDraft(c *gin.Context) {
 		return
 	}
 	if err := h.svcs.Criteria.ToDraft(id.ID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 
@@ -129,14 +129,14 @@ func (h *Handler) UploadCriterionImage(c *gin.Context) {
 
 	fileHeader, err := c.FormFile("image")
 	if err != nil {
-		c.JSON(400, gin.H{"error": "image is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "image is required"})
 		return
 	}
 
 	// Открываем файл
 	file, err := fileHeader.Open()
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	defer file.Close()
@@ -152,7 +152,7 @@ func (h *Handler) UploadCriterionImage(c *gin.Context) {
 	)
 	if err != nil {
 		fmt.Println("ТУТ")
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	imgname := fmt.Sprintf("http://localhost:9000/%s/%s", bucket, objectName)
