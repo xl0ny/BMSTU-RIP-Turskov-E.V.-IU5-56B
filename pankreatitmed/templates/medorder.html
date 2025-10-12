@@ -7,7 +7,7 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/criteria?med_order_id={{.MedOrderID}}">
+    <a class="brand" href="/criteria">
         <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
              alt="PankreatitMed Logo" class="logo">
     </a>
@@ -46,7 +46,7 @@
         <div class="pic"><img src="{{(index $.CriteriaMap .CriterionID).ImageURL}}" alt="{{(index $.CriteriaMap .CriterionID).Name}}"></div>
         <input type="text" placeholder="..." class="crit-input" value="{{if nzf .ValueNum}} {{.ValueNum}} {{end}}">
         <span class="indicator">{{if .ValueIndicator}}1{{else}}0{{end}}</span>
-        <div class="del"><img src="http://127.0.0.1:9000/services-images/del_button.png"></div>
+<!--        <div class="del"><img src="http://127.0.0.1:9000/services-images/del_button.png"></div>-->
     </article>
     {{end}}
 </main>

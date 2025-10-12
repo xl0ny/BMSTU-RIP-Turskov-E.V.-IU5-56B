@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,11 +12,8 @@ const demoUserID uint = 1 // пока без авторизации
 // GET /criteria?q=&order_id=
 func (h *Handler) CriteriaList(c *gin.Context) {
 	q := c.Query("q")
-	orderIDStr := c.Query("med_order_id")
-	var orderID uint
-	if v, err := strconv.Atoi(orderIDStr); err == nil && v > 0 {
-		orderID = uint(v)
-	}
+	o, _ := h.Repository.GetOrCreateDraftMedOrder(demoUserID)
+	orderID := uint(o.ID)
 	checkdeleted, _ := h.Repository.IsMedOrderDeleted(orderID)
 	if checkdeleted && orderID != 0 {
 		c.HTML(http.StatusOK, "medordernotfind.html", gin.H{
@@ -27,11 +23,7 @@ func (h *Handler) CriteriaList(c *gin.Context) {
 	}
 	criteria, _ := h.Repository.GetCriteria(q)
 	var cartCount int64
-	if orderID > 0 {
-		cartCount, _ = h.Repository.CountItems(orderID)
-	}
-	fmt.Print("ВВУВувцу")
-	fmt.Print(cartCount)
+	cartCount, _ = h.Repository.CountItems(orderID)
 	c.HTML(http.StatusOK, "criteria.html", gin.H{
 		"Title":      "Услуги (критерии Рэнсона)",
 		"Criteria":   criteria,
@@ -43,7 +35,7 @@ func (h *Handler) CriteriaList(c *gin.Context) {
 
 // GET /service?id=&order_id=
 func (h *Handler) CriterionDetail(c *gin.Context) {
-	idStr := c.Query("id")
+	idStr := c.Param("id")
 	id64, _ := strconv.Atoi(idStr)
 	orderIDStr := c.Query("med_order_id")
 	orderID64, _ := strconv.Atoi(orderIDStr)

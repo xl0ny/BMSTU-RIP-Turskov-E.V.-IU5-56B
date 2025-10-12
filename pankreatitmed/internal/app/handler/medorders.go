@@ -13,26 +13,21 @@ import (
 // POST /order/add
 func (h *Handler) MedOrderAdd(c *gin.Context) {
 	criterionID, _ := strconv.Atoi(c.PostForm("criterion_id"))
-	medorderID, _ := strconv.Atoi(c.PostForm("med_order_id"))
 	q := c.PostForm("q")
-
-	if medorderID == 0 {
-		o, _ := h.Repository.GetOrCreateDraftMedOrder(demoUserID)
-		medorderID = int(o.ID)
-	}
+	o, _ := h.Repository.GetOrCreateDraftMedOrder(demoUserID)
+	medorderID := int(o.ID)
 	_ = h.Repository.AddItem(uint(medorderID), uint(criterionID))
-
-	c.Redirect(http.StatusFound, "/criteria?med_order_id="+strconv.Itoa(medorderID)+"&q="+q)
+	c.Redirect(http.StatusFound, "/criteria?q="+q)
 }
 
 // GET /order?id=
 func (h *Handler) MedOrderView(c *gin.Context) {
-	idStr := c.Query("id")
+	idStr := c.Param("id")
 	oid, _ := strconv.Atoi(idStr)
 
 	o, items, err := h.Repository.GetMedOrderWithItems(uint(oid))
 	if err != nil || o.Status == "deleted" {
-		c.String(http.StatusGone, "Заявка удалена или не найдена")
+		c.Redirect(http.StatusFound, "/criteria")
 		return
 	}
 
@@ -44,7 +39,7 @@ func (h *Handler) MedOrderView(c *gin.Context) {
 			}
 		}
 	}
-	
+
 	r := len(items)
 	o.RansonScore = &r
 	c.HTML(http.StatusOK, "medorder.html", gin.H{

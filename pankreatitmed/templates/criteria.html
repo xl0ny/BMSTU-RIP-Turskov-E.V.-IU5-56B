@@ -7,7 +7,7 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/criteria?med_order_id={{.MedOrderID}}">
+    <a class="brand" href="/criteria">
         <img src="http://127.0.0.1:9000/services-images/pankreatitlogo.png"
              alt="PankreatitMed Logo" class="logo">
     </a>
@@ -15,7 +15,6 @@
 
 <section class="find_elements">
     <form class="search" method="GET" action="/criteria">
-    <input type="hidden" name="med_order_id" value="{{.MedOrderID}}">
     <input type="text" name="q" placeholder="Поиск услуг" value="{{.Query}}">
     <button type="submit">Найти</button>
 </form>
@@ -27,7 +26,7 @@
         <div class="code">{{.Code}}</div>
 
         <h3 class="title">
-            <a href="/criterion?id={{.ID}}&med_order_id={{$.MedOrderID}}">{{.Name}}</a>
+            <a href="/criterion/{{.ID}}">{{.Name}}</a>
         </h3>
 
         <div class="meta">
@@ -60,7 +59,11 @@
         </div>
     </article>
     {{end}}
-    <a class="cart" {{if .CartCount}} href="/medorder?id={{.MedOrderID}}" {{end}}><span class="badge">{{.CartCount}}</span></a>
+    {{if .CartCount}}
+    <a class="cart"  href="/medorder/{{.MedOrderID}}" ><span class="badge">{{.CartCount}}</span></a>
+    {{else}}
+    <a class="not-find-cart"><span class="not-find-badge"></span></a>
+    {{end}}
 </main>
 
 </body>

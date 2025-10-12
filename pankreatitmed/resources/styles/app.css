@@ -91,6 +91,20 @@ body {
     background-size: contain;
 }
 
+.not-find-cart {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 1000;
+    color: #0b0b0b;
+    text-decoration: none;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    background: url("http://127.0.0.1:9000/services-images/Shopping Bag Icon Not Find.png") no-repeat center center;
+    background-size: contain;
+}
+
 .badge {
     background: var(--primary);
     color: #fff;
