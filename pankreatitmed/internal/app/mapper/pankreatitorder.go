@@ -7,8 +7,8 @@ import (
 
 func PankreatitOrderToSendPankreatitOrder(o *ds.PankreatitOrder, amount uint) response.SendCartPankreatitOrder {
 	return response.SendCartPankreatitOrder{
-		MedOrderId:     o.ID,
-		CriteriaAmount: amount,
+		PankreatitOrderId: o.ID,
+		CriteriaAmount:    amount,
 	}
 }
 

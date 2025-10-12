@@ -12,7 +12,7 @@ func (h *Handler) DeletePankreatitOrderItem(c *gin.Context) {
 	if err := c.ShouldBindQuery(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	if err := h.svcs.PankreatitOrderItems.Delete(item.MedOrderID, item.CriterionID); err != nil {
+	if err := h.svcs.PankreatitOrderItems.Delete(item.PankreatitOrderID, item.CriterionID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -29,7 +29,7 @@ func (h *Handler) UpdatePankreatitOrderItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.svcs.PankreatitOrderItems.Update(item.MedOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {
+	if err := h.svcs.PankreatitOrderItems.Update(item.PankreatitOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

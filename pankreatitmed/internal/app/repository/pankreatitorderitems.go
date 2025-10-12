@@ -7,7 +7,7 @@ import (
 
 func (r *Repository) DeleteFromPankreatitOrder(pankreatitorder, criterion uint) error {
 	fmt.Println("sqfew")
-	return r.db.Where("med_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).Delete(&ds.PankreatitOrderItem{}).Error
+	return r.db.Where("pankreatit_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).Delete(&ds.PankreatitOrderItem{}).Error
 }
 
 func (r *Repository) UpdatePankreatitOrderItem(pankreatitorder, criterion uint, position *uint, val *float64) error {
@@ -24,6 +24,6 @@ func (r *Repository) UpdatePankreatitOrderItem(pankreatitorder, criterion uint, 
 	}
 
 	return r.db.Model(&ds.PankreatitOrderItem{}).
-		Where("med_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).
+		Where("pankreatit_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).
 		Updates(updates).Error
 }

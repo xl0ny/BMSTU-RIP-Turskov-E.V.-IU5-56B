@@ -5,8 +5,8 @@ import (
 )
 
 type SendCartPankreatitOrder struct {
-	MedOrderId     uint `json:"med_order_id"`
-	CriteriaAmount uint `json:"criteria_amount"`
+	PankreatitOrderId uint `json:"pankreatit_order_id"`
+	CriteriaAmount    uint `json:"criteria_amount"`
 }
 
 type SendPankreatitOrders struct {

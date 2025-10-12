@@ -24,7 +24,7 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 			srv.POST("/:id/add-to-draft", h.AddCriteriaToDraft)
 		}
 
-		ord := api.Group("/medorders")
+		ord := api.Group("/pankreatitorders")
 		{
 			ord.GET("/cart", h.PankreatitOrderFromCart)
 			ord.GET("", h.ListPankreatitOrders)
