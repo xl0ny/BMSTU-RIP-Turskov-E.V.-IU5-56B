@@ -18,8 +18,8 @@ func main() {
 
 	// Migrate the schema
 	err = db.AutoMigrate(
-		&ds.MedOrder{},
-		&ds.MedOrderItem{},
+		&ds.PankreatitOrder{},
+		&ds.PankreatitOrderItem{},
 		&ds.Criterion{},
 		&ds.MedUser{},
 	)
