@@ -53,10 +53,21 @@ func (r *Repository) GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.Pankre
 	return &o, r.db.Create(&o).Error
 }
 
-func (r *Repository) GetPankreatitOrders(status string, start, end time.Time) ([]ds.PankreatitOrder, error) {
+func (r *Repository) GetPankreatitOrders(userID uint, status string, start, end time.Time) ([]ds.PankreatitOrder, error) {
 	var orders []ds.PankreatitOrder
-	err := r.db.Where("(created_at >= ? AND created_at < ?) AND status = ?", start, end, status).Find(&orders).Error
-	return orders, err
+	usr, errr := r.GetMedUserByID(userID)
+	if errr != nil {
+		return nil, errr
+	}
+
+	if usr.IsModerator {
+		err := r.db.Where("status = ? AND (created_at >= ? AND created_at < ?)", status, start, end).Find(&orders).Error
+		return orders, err
+	} else {
+		err := r.db.Where("creator_id = ? AND status = ? AND (created_at >= ? AND created_at < ?)", userID, status, start, end).Find(&orders).Error
+		return orders, err
+	}
+
 }
 
 func (r *Repository) GetPankreatitOrderWithItems(orderID uint) (ds.PankreatitOrder, []ds.PankreatitOrderItem, error) {

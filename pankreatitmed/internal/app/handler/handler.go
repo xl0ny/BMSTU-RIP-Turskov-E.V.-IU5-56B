@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"pankreatitmed/internal/app/authctx"
 	"pankreatitmed/internal/app/services"
 
 	"github.com/gin-gonic/gin"
@@ -13,43 +14,63 @@ func NewHandler(svcs *services.Services) *Handler { return &Handler{svcs: svcs} 
 func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api")
 	{
-		srv := api.Group("/criteria")
+		crit := api.Group("/criteria")
 		{
-			srv.GET("", h.CriteriaList)
-			srv.GET("/:id", h.CriteriaGet)
-			srv.POST("", h.CriteriaCreate)
-			srv.PUT("/:id", h.CriteriaUpdate)
-			srv.DELETE("/:id", h.CriteriaDelete)
-			srv.POST("/:id/image", h.UploadCriterionImage)
-			srv.POST("/:id/add-to-draft", h.AddCriteriaToDraft)
+
+			crit.GET("", h.CriteriaList)
+			crit.GET("/:id", h.CriteriaGet)
+			auth := crit.Group("")
+			auth.Use(authctx.RequireAuth())
+			{
+				moder := auth.Group("")
+				moder.Use(authctx.RequireModerator())
+				{
+					moder.POST("", h.CriteriaCreate)
+					moder.PUT("/:id", h.CriteriaUpdate)
+					moder.DELETE("/:id", h.CriteriaDelete)
+					moder.POST("/:id/image", h.UploadCriterionImage)
+				}
+				auth.POST("/:id/add-to-draft", h.AddCriteriaToDraft)
+			}
+
 		}
 
-		ord := api.Group("/pankreatitorders")
+		medord := api.Group("/pankreatitorders")
 		{
-			ord.GET("/cart", h.PankreatitOrderFromCart)
-			ord.GET("", h.ListPankreatitOrders)
-			ord.GET(":id", h.PankreatitOrderGet)
-			ord.PUT("/:id", h.PankreatitOrderUpdate)
-			ord.PUT("/:id/form", h.PankreatitOrderForm)
-			ord.PUT("/:id/set/:status", h.PankreatitOrderComplete)
-			ord.DELETE("/:id", h.PankreatitOrderDelete)
 
-			ord.DELETE("/items", h.DeletePankreatitOrderItem)
-			ord.PUT("/items", h.UpdatePankreatitOrderItem)
+			auth := medord.Group("")
+			auth.Use(authctx.RequireAuth())
+			{
+				auth.GET("/cart", h.PankreatitOrderFromCart)
+				auth.GET("", h.ListPankreatitOrders)
+				auth.GET(":id", h.PankreatitOrderGet)
+
+				moder := auth.Group("")
+				moder.Use(authctx.RequireModerator())
+
+				moder.PUT("/:id", h.PankreatitOrderUpdate)
+				auth.PUT("/:id/form", h.PankreatitOrderForm)
+				moder.PUT("/:id/set/:status", h.PankreatitOrderComplete)
+				auth.DELETE("/:id", h.PankreatitOrderDelete)
+
+				auth.DELETE("/items", h.DeletePankreatitOrderItem)
+				moder.PUT("/items", h.UpdatePankreatitOrderItem)
+			}
 		}
 
-		auth := api.Group("/users")
+		authmeduser := api.Group("/users")
 		{
-			auth.POST("auth/register", h.MedUserRegistation)
-			auth.GET("me", h.MedUserGetFields)
-			auth.PUT("me", h.MedUserUpdateFields)
-			auth.POST("auth/login", h.MedUserLogIn)
-			auth.POST("auth/logout", h.MedUserLogOut)
+			authmeduser.POST("auth/register", h.MedUserRegistation)
+			authmeduser.POST("auth/login", h.MedUserLogIn)
+			auth := authmeduser.Group("")
+			auth.Use(authctx.RequireAuth())
+			{
+				auth.GET("me", h.MedUserGetFields)
+				auth.PUT("me", h.MedUserUpdateFields)
+				moder := auth.Group("")
+				moder.Use(authctx.RequireModerator())
+				moder.POST("auth/logout/:token", h.MedUserLogOut)
+			}
 		}
 	}
 }
-
-//func (h *Handler) RegisterStatic(r *gin.Engine) {
-//	r.LoadHTMLGlob("templates/*")
-//	r.Static("/static/styles", "./resources/styles")
-//}

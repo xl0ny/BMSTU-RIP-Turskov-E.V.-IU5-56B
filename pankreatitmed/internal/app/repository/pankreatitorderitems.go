@@ -8,7 +8,6 @@ import (
 )
 
 func (r *Repository) DeleteFromPankreatitOrder(pankreatitorder, criterion uint) error {
-	fmt.Println("sqfew")
 	return r.db.Where("pankreatit_order_id = ? AND criterion_id = ?", pankreatitorder, criterion).Delete(&ds.PankreatitOrderItem{}).Error
 }
 

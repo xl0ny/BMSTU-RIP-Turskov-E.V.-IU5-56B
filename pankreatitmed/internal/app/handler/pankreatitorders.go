@@ -1,16 +1,20 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
+	"pankreatitmed/internal/app/authctx"
 	"pankreatitmed/internal/app/dto/request"
-	"pankreatitmed/internal/app/singleton"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) PankreatitOrderFromCart(c *gin.Context) {
-	mo, err := h.svcs.PankreatitOrders.GetDraft(singleton.GetCurrentUser().ID)
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with your token"})
+		return
+	}
+	mo, err := h.svcs.PankreatitOrders.GetDraft(usr.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -19,14 +23,17 @@ func (h *Handler) PankreatitOrderFromCart(c *gin.Context) {
 }
 
 func (h *Handler) ListPankreatitOrders(c *gin.Context) {
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with your token"})
+		return
+	}
 	var filters request.GetPankreatitOrders
 	if err := c.ShouldBindQuery(&filters); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println("--------------------")
-	fmt.Println(filters.Status, filters.FromDate, filters.ToDate)
-	res, err := h.svcs.PankreatitOrders.List(filters.Status, filters.FromDate, filters.ToDate)
+	res, err := h.svcs.PankreatitOrders.List(usr.ID, filters.Status, filters.FromDate, filters.ToDate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
@@ -60,7 +67,6 @@ func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(mo.Status)
 	if err := h.svcs.PankreatitOrders.Update(id.ID, &mo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
@@ -68,13 +74,27 @@ func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
 }
 
 func (h *Handler) PankreatitOrderForm(c *gin.Context) {
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with your token"})
+		return
+	}
 	var id request.GetPankreatitOrder
 	if err := c.ShouldBindUri(&id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := h.svcs.PankreatitOrders.Form(id.ID)
+	o, err := h.svcs.PankreatitOrders.Get(id.ID)
+	//fmt.Println(o.CreatorID, usr.ID)
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if o.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to form this order(not your order)"})
+		return
+	}
+	if err := h.svcs.PankreatitOrders.Form(id.ID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -83,16 +103,16 @@ func (h *Handler) PankreatitOrderForm(c *gin.Context) {
 
 func (h *Handler) PankreatitOrderComplete(c *gin.Context) {
 	var idstatus request.EndOrCancelPankreatitOrder
-	var moderator request.GetModerator
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with your token"})
+		return
+	}
 	if err := c.ShouldBindUri(&idstatus); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := c.ShouldBindQuery(&moderator); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := h.svcs.PankreatitOrders.CancelOrEnd(idstatus.ID, moderator.ModeratorID, moderator.Password, idstatus.Status); err != nil {
+	if err := h.svcs.PankreatitOrders.CancelOrEnd(idstatus.ID, usr.ID, idstatus.Status); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.Status(http.StatusOK)

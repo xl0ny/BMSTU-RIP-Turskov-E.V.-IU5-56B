@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"pankreatitmed/internal/app/ds"
 	"pankreatitmed/internal/app/dto/request"
-	"pankreatitmed/internal/app/singleton"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,7 @@ type CriteriaService interface {
 	Create(c *ds.Criterion) error
 	Update(id uint, in *request.UpdateCriterion) error
 	Delete(id uint) error
-	ToDraft(id uint) error
+	ToDraft(id, user_id uint) error
 	DeleteImage(client *minio.Client, critID uint, c *gin.Context) error
 }
 
@@ -63,8 +62,8 @@ func (s *criteriaService) Delete(id uint) error {
 	return s.repo.DeleteCriterion(id)
 }
 
-func (s *criteriaService) ToDraft(id uint) error {
-	oi, err := s.repo.GetOrCreateDraftPankreatitOrder(singleton.GetCurrentUser().ID)
+func (s *criteriaService) ToDraft(id, user_id uint) error {
+	oi, err := s.repo.GetOrCreateDraftPankreatitOrder(user_id)
 	println(oi)
 	if err != nil {
 		return err
@@ -72,10 +71,10 @@ func (s *criteriaService) ToDraft(id uint) error {
 	return s.repo.AddItem(oi.ID, id)
 }
 
-//func (s *criteriaService) UpdateImage(id uint, in *request.UpdateCriterion) error {
+// func (s *criteriaService) UpdateImage(id uint, in *request.UpdateCriterion) error {
 //
-//}
-
+// }
+// TODO че тут за поиск ошибки такой ущербный, разобраться
 func (s *criteriaService) DeleteImage(client *minio.Client, critID uint, c *gin.Context) error {
 	objectName, err := s.repo.GetImageName(critID)
 	if objectName == "" || err != nil {

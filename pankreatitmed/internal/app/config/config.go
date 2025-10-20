@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
@@ -11,6 +12,22 @@ import (
 type Config struct {
 	ServiceHost string
 	ServicePort int
+
+	JWT   JWTConfig   `mapstructure:"jwt"`
+	Redis RedisConfig `mapstructure:"redis"`
+}
+
+type JWTConfig struct {
+	Secret string        `mapstructure:"secret"`
+	Issuer string        `mapstructure:"issuer"`
+	TTL    time.Duration `mapstructure:"ttl"`
+}
+
+type RedisConfig struct {
+	Addr     string        `mapstructure:"addr"`
+	DB       int           `mapstructure:"db"`
+	Password string        `mapstructure:"password"`
+	TTL      time.Duration `mapstructure:"ttl"`
 }
 
 func NewConfig() (*Config, error) {
@@ -29,6 +46,9 @@ func NewConfig() (*Config, error) {
 	viper.WatchConfig()
 
 	err = viper.ReadInConfig()
+	log.Infof("jwt.ttl raw (string): %q", viper.GetString("jwt.ttl"))
+	log.Infof("jwt map: %#v", viper.GetStringMap("jwt"))
+	log.Infof("all settings: %#v", viper.AllSettings())
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +59,15 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	//cfg := &Config{}
+	//if err := viper.Unmarshal(cfg,
+	//	viper.DecodeHook(mapstructure.StringToTimeDurationHookFunc()),
+	//); err != nil {
+	//	return nil, err
+	//}
 
+	//cfg.JWT.TTL = viper.GetDuration("jwt_ttl")
+	//cfg.Redis.TTL = viper.GetDuration("redis_ttl")
 	log.Info("config parsed")
 
 	return cfg, nil

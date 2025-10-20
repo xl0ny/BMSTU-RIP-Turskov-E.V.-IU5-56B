@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"pankreatitmed/internal/app/authctx"
 	"pankreatitmed/internal/app/dto"
 	"pankreatitmed/internal/app/dto/request"
 	"pankreatitmed/internal/app/dto/response"
@@ -110,12 +111,17 @@ func (h *Handler) CriteriaDelete(c *gin.Context) {
 
 // TODO настроить нормализацию последовательности БД
 func (h *Handler) AddCriteriaToDraft(c *gin.Context) {
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with your token"})
+		return
+	}
 	var id request.GetCriterion
 	if err := c.ShouldBindUri(&id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.svcs.Criteria.ToDraft(id.ID); err != nil {
+	if err := h.svcs.Criteria.ToDraft(id.ID, usr.ID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
@@ -155,7 +161,6 @@ func (h *Handler) UploadCriterionImage(c *gin.Context) {
 		minio.PutObjectOptions{ContentType: fileHeader.Header.Get("Content-Type")},
 	)
 	if err != nil {
-		fmt.Println("ТУТ")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

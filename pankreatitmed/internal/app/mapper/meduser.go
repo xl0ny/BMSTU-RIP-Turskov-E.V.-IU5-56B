@@ -13,6 +13,13 @@ func MedUserRegistrationToMedUser(usr request.MedUserRegistration) ds.MedUser {
 	}
 }
 
+func AuthenticateMedUserToMedUser(usr request.AuthenticateMedUser) ds.MedUser {
+	return ds.MedUser{
+		Login:    usr.Login,
+		Password: usr.Password,
+	}
+}
+
 func MedUserToSendMedUserFields(user *ds.MedUser) response.SendMedUserField {
 	return response.SendMedUserField{
 		ID:          user.ID,

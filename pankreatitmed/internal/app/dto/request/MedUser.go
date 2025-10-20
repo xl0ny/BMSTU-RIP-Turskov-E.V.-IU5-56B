@@ -14,7 +14,7 @@ type UpdateMedUser struct {
 	Password *string `json:"password"`
 }
 
-type AuthenticateUser struct {
+type AuthenticateMedUser struct {
 	Login    string `json:"login" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }

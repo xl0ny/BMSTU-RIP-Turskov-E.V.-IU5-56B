@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"pankreatitmed/internal/app/ds"
 	"pankreatitmed/internal/app/dto/request"
 	"pankreatitmed/internal/app/dto/response"
@@ -16,11 +15,11 @@ import (
 
 type PankreatitOrdersService interface {
 	GetDraft(creatorID uint) (*response.SendCartPankreatitOrder, error)
-	List(status string, start, end time.Time) ([]response.SendPankreatitOrders, error)
+	List(userID uint, status string, start, end time.Time) ([]response.SendPankreatitOrders, error)
 	Get(ID uint) (response.SendPankreatitOrder, error)
 	Update(ID uint, in *request.UpdatePankreatitOrder) error
 	Form(ID uint) error
-	CancelOrEnd(ID, moderator uint, password, status string) error
+	CancelOrEnd(ID, moderator uint, status string) error
 	Delete(ID uint) error
 }
 
@@ -43,12 +42,11 @@ func (s *pankreatitOrdersService) GetDraft(creatorID uint) (*response.SendCartPa
 		return nil, err
 	}
 	res := mapper.PankreatitOrderToSendPankreatitOrder(o, uint(amnt))
-	fmt.Println(res)
 	return &res, err
 }
 
-func (s *pankreatitOrdersService) List(status string, start, end time.Time) ([]response.SendPankreatitOrders, error) {
-	morders, err := s.repo.GetPankreatitOrders(status, start, end)
+func (s *pankreatitOrdersService) List(userID uint, status string, start, end time.Time) ([]response.SendPankreatitOrders, error) {
+	morders, err := s.repo.GetPankreatitOrders(userID, status, start, end)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +76,7 @@ func (s *pankreatitOrdersService) Form(ID uint) error {
 	return s.repo.FormPankreatitOrder(ID)
 }
 
-func (s *pankreatitOrdersService) CancelOrEnd(ID, moderator uint, password, status string) error {
+func (s *pankreatitOrdersService) CancelOrEnd(ID, moderator uint, status string) error {
 	check, err := s.repo.IsPankreatitOrderFormed(ID)
 	if err != nil {
 		return err

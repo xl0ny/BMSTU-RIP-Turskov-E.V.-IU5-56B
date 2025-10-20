@@ -1,7 +1,5 @@
 package services
 
-import "fmt"
-
 type PankreatitOrderItemsService interface {
 	Delete(pankreatitorder, criterion uint) error
 	Update(pankreatitorder, criterion uint, position *uint, val *float64) error
@@ -15,8 +13,6 @@ func NewPankreatitOrderItemsService(repo PankreatitOrderItemsRepoPort) Pankreati
 	return &pankreatitOrderItemsService{repo: repo}
 }
 func (s *pankreatitOrderItemsService) Delete(pankreatitorder, criterion uint) error {
-	fmt.Println(pankreatitorder, criterion)
-	fmt.Println(s.repo)
 	return s.repo.DeleteFromPankreatitOrder(pankreatitorder, criterion)
 }
 

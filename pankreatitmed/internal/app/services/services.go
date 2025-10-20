@@ -1,5 +1,7 @@
 package services
 
+import "pankreatitmed/internal/app/middleware"
+
 type Services struct {
 	Criteria             CriteriaService
 	PankreatitOrders     PankreatitOrdersService
@@ -14,11 +16,16 @@ type Reps struct {
 	MedUsersRepo             MedUsersRepoPort
 }
 
-func NewServices(d Reps) *Services {
+type Configs struct {
+	JWTConfig    middleware.JWTConfig
+	JWTBlackList *middleware.RedisBlacklist
+}
+
+func NewServices(d Reps, c Configs) *Services {
 	return &Services{
 		Criteria:             NewCriteriaService(d.CriteriaRepo),
 		PankreatitOrders:     NewPankreatitOrdersService(d.PankreatitOrdersRepo),
 		PankreatitOrderItems: NewPankreatitOrderItemsService(d.PankreatitOrderItemsRepo),
-		MedUsers:             NewMedUsersService(d.MedUsersRepo),
+		MedUsers:             NewMedUsersService(d.MedUsersRepo, c.JWTConfig, c.JWTBlackList),
 	}
 }

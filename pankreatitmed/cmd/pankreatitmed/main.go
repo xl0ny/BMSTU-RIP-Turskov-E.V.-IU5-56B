@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"pankreatitmed/internal/app/config"
 	"pankreatitmed/internal/app/dsn"
 	"pankreatitmed/internal/app/handler"
+	"pankreatitmed/internal/app/middleware"
 	"pankreatitmed/internal/app/repository"
 	"pankreatitmed/internal/app/services"
 	"pankreatitmed/internal/pkg"
@@ -13,28 +13,35 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @title PankreatitMed API
+// @version 1.0
+// @description Ranscon Counter
+// @BasePath /api
+
+// @securityDefinitions.cookie CookieAuth
+// @in   cookie
+// @name sid
+
+// @securityDefinitions.apikey BearerAuth
+// @in   header
+// @name Authorization
+// @description Bearer <token>
 func main() {
 	router := gin.Default()
 	conf, err := config.NewConfig()
 	if err != nil {
 		logrus.Fatalf("error loading config: %v", err)
 	}
-	//router.SetFuncMap(template.FuncMap{
-	//	// true, если указатель не nil и значение != 0
-	//	"nzf": func(p *float64) bool { return p != nil && *p != 0 },
-	//
-	//	// безопасно достаём значение (0, если nil)
-	//	"valf": func(p *float64) float64 {
-	//		if p == nil {
-	//			return 0
-	//		}
-	//		return *p
-	//	},
-	//})
-	//router.LoadHTMLGlob("templates/*")
+
+	jwtCfg := middleware.JWTConfig{
+		Secret: conf.JWT.Secret,
+		Issuer: conf.JWT.Issuer,
+		TTL:    conf.JWT.TTL,
+	}
+	blacklist := middleware.NewRedisBlacklist(conf.Redis.Addr, conf.Redis.Password, conf.Redis.DB)
+	router.Use(middleware.Auth(jwtCfg, blacklist))
 
 	postgresString := dsn.FromEnv()
-	fmt.Println(postgresString)
 
 	rep, errRep := repository.New(postgresString)
 	if errRep != nil {
@@ -46,7 +53,7 @@ func main() {
 		PankreatitOrdersRepo:     rep,
 		PankreatitOrderItemsRepo: rep,
 		MedUsersRepo:             rep,
-	})
+	}, services.Configs{JWTConfig: jwtCfg, JWTBlackList: blacklist})
 
 	hand := handler.NewHandler(svcs)
 
