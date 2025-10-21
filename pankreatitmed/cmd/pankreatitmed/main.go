@@ -18,10 +18,6 @@ import (
 // @description Ranscon Counter
 // @BasePath /api
 
-// @securityDefinitions.cookie CookieAuth
-// @in   cookie
-// @name sid
-
 // @securityDefinitions.apikey BearerAuth
 // @in   header
 // @name Authorization

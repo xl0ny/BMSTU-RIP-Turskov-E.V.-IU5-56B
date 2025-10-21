@@ -26,7 +26,7 @@ type PankreatitOrdersRepoPort interface {
 	IsPankreatitOrderFormed(orderID uint) (bool, error)
 
 	GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.PankreatitOrder, error)
-	GetPankreatitOrders(userID uint, status string, start, end time.Time) ([]ds.PankreatitOrder, error)
+	GetPankreatitOrders(userID uint, status *string, start, end *time.Time) ([]ds.PankreatitOrder, error)
 	GetPankreatitOrderWithItems(orderID uint) (ds.PankreatitOrder, []ds.PankreatitOrderItem, error)
 
 	UpdatePankreatitOrder(id uint, order *request.UpdatePankreatitOrder) error

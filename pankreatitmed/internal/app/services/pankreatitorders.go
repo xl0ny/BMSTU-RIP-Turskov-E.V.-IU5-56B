@@ -15,7 +15,7 @@ import (
 
 type PankreatitOrdersService interface {
 	GetDraft(creatorID uint) (*response.SendCartPankreatitOrder, error)
-	List(userID uint, status string, start, end time.Time) ([]response.SendPankreatitOrders, error)
+	List(userID uint, status *string, start, end *time.Time) ([]response.SendPankreatitOrders, error)
 	Get(ID uint) (response.SendPankreatitOrder, error)
 	Update(ID uint, in *request.UpdatePankreatitOrder) error
 	Form(ID uint) error
@@ -45,7 +45,7 @@ func (s *pankreatitOrdersService) GetDraft(creatorID uint) (*response.SendCartPa
 	return &res, err
 }
 
-func (s *pankreatitOrdersService) List(userID uint, status string, start, end time.Time) ([]response.SendPankreatitOrders, error) {
+func (s *pankreatitOrdersService) List(userID uint, status *string, start, end *time.Time) ([]response.SendPankreatitOrders, error) {
 	morders, err := s.repo.GetPankreatitOrders(userID, status, start, end)
 	if err != nil {
 		return nil, err

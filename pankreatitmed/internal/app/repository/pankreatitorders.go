@@ -53,21 +53,37 @@ func (r *Repository) GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.Pankre
 	return &o, r.db.Create(&o).Error
 }
 
-func (r *Repository) GetPankreatitOrders(userID uint, status string, start, end time.Time) ([]ds.PankreatitOrder, error) {
+func (r *Repository) GetPankreatitOrders(userID uint, status *string, start, end *time.Time) ([]ds.PankreatitOrder, error) {
 	var orders []ds.PankreatitOrder
-	usr, errr := r.GetMedUserByID(userID)
-	if errr != nil {
-		return nil, errr
+
+	usr, err := r.GetMedUserByID(userID)
+	if err != nil {
+		return nil, err
 	}
 
-	if usr.IsModerator {
-		err := r.db.Where("status = ? AND (created_at >= ? AND created_at < ?)", status, start, end).Find(&orders).Error
-		return orders, err
-	} else {
-		err := r.db.Where("creator_id = ? AND status = ? AND (created_at >= ? AND created_at < ?)", userID, status, start, end).Find(&orders).Error
-		return orders, err
+	q := r.db.Model(&ds.PankreatitOrder{})
+
+	if !usr.IsModerator {
+		q = q.Where("creator_id = ?", userID)
 	}
 
+	if status != nil && *status != "" {
+		q = q.Where("status = ?", *status)
+	}
+
+	switch {
+	case start != nil && end != nil:
+		q = q.Where("created_at >= ? AND created_at < ?", *start, *end)
+	case start != nil:
+		q = q.Where("created_at >= ?", *start)
+	case end != nil:
+		q = q.Where("created_at < ?", *end)
+	}
+
+	if err := q.Order("created_at ASC").Find(&orders).Error; err != nil {
+		return nil, err
+	}
+	return orders, nil
 }
 
 func (r *Repository) GetPankreatitOrderWithItems(orderID uint) (ds.PankreatitOrder, []ds.PankreatitOrderItem, error) {

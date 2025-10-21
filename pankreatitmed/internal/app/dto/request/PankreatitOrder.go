@@ -5,9 +5,9 @@ import (
 )
 
 type GetPankreatitOrders struct {
-	Status   string    `form:"status" binding:"required,oneof=formed completed rejected draft deleted"`
-	FromDate time.Time `form:"from_date" time_format:"2006-01-02T15:04:05"`
-	ToDate   time.Time `form:"to_date" time_format:"2006-01-02T15:04:05"`
+	Status   *string    `form:"status" binding:"omitempty,oneof=formed completed rejected draft deleted"`
+	FromDate *time.Time `form:"from_date" time_format:"2006-01-02T15:04:05"`
+	ToDate   *time.Time `form:"to_date" time_format:"2006-01-02T15:04:05"`
 }
 
 type GetPankreatitOrder struct {
