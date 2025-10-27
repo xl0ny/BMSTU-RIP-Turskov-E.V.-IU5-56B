@@ -174,7 +174,7 @@ func (h *Handler) CriteriaDelete(c *gin.Context) {
 // @Security     BearerAuth
 // @Produce      json
 // @Param        id   path int true "ID услуги"
-// @Success      200 {string} string "ok"
+// @Success      201 {string} string "created"
 // @Failure      400 {object} map[string]any "bad request"
 // @Failure      401 {object} map[string]any "unauthenticated"
 // @Failure      404 {object} map[string]any "not found"
@@ -193,6 +193,7 @@ func (h *Handler) AddCriteriaToDraft(c *gin.Context) {
 	if err := h.svcs.Criteria.ToDraft(id.ID, usr.ID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 	}
+	c.Status(http.StatusCreated)
 }
 
 // TODO: сделать проверку на существовние критерия (если его нет, все равно добавляет изображение)

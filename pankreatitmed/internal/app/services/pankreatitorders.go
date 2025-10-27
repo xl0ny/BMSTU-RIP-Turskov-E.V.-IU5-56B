@@ -64,7 +64,6 @@ func (s *pankreatitOrdersService) Update(ID uint, in *request.UpdatePankreatitOr
 	return s.repo.UpdatePankreatitOrder(ID, in)
 }
 
-// TODO сделать проверку на соответстиве пользователя и создателя, а так же проверка на черновик
 func (s *pankreatitOrdersService) Form(ID uint) error {
 	check, err := s.repo.IsPankreatitOrderDraft(ID)
 	if err != nil {

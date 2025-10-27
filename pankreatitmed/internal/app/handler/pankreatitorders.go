@@ -104,6 +104,11 @@ func (h *Handler) PankreatitOrderGet(c *gin.Context) {
 // @Failure      404 {object} map[string]any "not found"
 // @Router       /pankreatitorders/{id} [put]
 func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with your token"})
+		return
+	}
 	var id request.GetPankreatitOrder
 	var mo request.UpdatePankreatitOrder
 	if err := c.ShouldBindUri(&id); err != nil {
@@ -112,6 +117,15 @@ func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&mo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	o, err := h.svcs.PankreatitOrders.Get(id.ID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if !usr.IsModerator && o.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to form this order(not your order)"})
 		return
 	}
 	if err := h.svcs.PankreatitOrders.Update(id.ID, &mo); err != nil {
@@ -151,7 +165,7 @@ func (h *Handler) PankreatitOrderForm(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	if o.CreatorID != usr.ID {
+	if !usr.IsModerator && o.CreatorID != usr.ID {
 		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to form this order(not your order)"})
 		return
 	}

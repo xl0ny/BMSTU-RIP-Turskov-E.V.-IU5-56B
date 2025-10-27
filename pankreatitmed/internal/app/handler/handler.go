@@ -43,16 +43,20 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 			{
 				auth.GET("/cart", h.PankreatitOrderFromCart)
 				auth.GET("", h.ListPankreatitOrders)
-				auth.GET(":id", h.PankreatitOrderGet)
 
 				moder := auth.Group("")
 				moder.Use(authctx.RequireModerator())
 
-				moder.PUT("/:id", h.PankreatitOrderUpdate)
+				//TODO: добавить проверку на пользователя
+				auth.GET(":id", h.PankreatitOrderGet)
+				//TODO: добавить проверку на пользователя
+				auth.PUT("/:id", h.PankreatitOrderUpdate)
 				auth.PUT("/:id/form", h.PankreatitOrderForm)
 				moder.PUT("/:id/set/:status", h.PankreatitOrderComplete)
+				//TODO: добавить проверку на пользователя
 				auth.DELETE("/:id", h.PankreatitOrderDelete)
 
+				//TODO: добавить проверку на пользователя
 				auth.DELETE("/items", h.DeletePankreatitOrderItem)
 				moder.PUT("/items", h.UpdatePankreatitOrderItem)
 			}
