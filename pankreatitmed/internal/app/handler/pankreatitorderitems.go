@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"pankreatitmed/internal/app/authctx"
 	"pankreatitmed/internal/app/dto/request"
 
 	"github.com/gin-gonic/gin"
@@ -21,8 +22,22 @@ import (
 // @Router       /pankreatitorders/items [delete]
 func (h *Handler) DeletePankreatitOrderItem(c *gin.Context) {
 	var item request.GetPankreatitOrderItem
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with your token"})
+		return
+	}
 	if err := c.ShouldBindQuery(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	o, err := h.svcs.PankreatitOrders.Get(item.PankreatitOrderID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if !usr.IsModerator && o.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to delete this order(not your order)"})
+		return
 	}
 	if err := h.svcs.PankreatitOrderItems.Delete(item.PankreatitOrderID, item.CriterionID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -48,12 +63,26 @@ func (h *Handler) DeletePankreatitOrderItem(c *gin.Context) {
 func (h *Handler) UpdatePankreatitOrderItem(c *gin.Context) {
 	var item request.GetPankreatitOrderItem
 	var fields request.PankreatitOrderItemUpdate
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with your token"})
+		return
+	}
 	if err := c.ShouldBindQuery(&item); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if err := c.ShouldBindJSON(&fields); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	o, err := h.svcs.PankreatitOrders.Get(item.PankreatitOrderID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if !usr.IsModerator && o.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to delete this order(not your order)"})
 		return
 	}
 	if err := h.svcs.PankreatitOrderItems.Update(item.PankreatitOrderID, item.CriterionID, fields.Position, fields.ValueNum); err != nil {

@@ -36,3 +36,6 @@ init-minio:
 		alias set local http://localhost:9000 minioadmin minioadmin123
 	docker run --rm --network host minio/mc mb -p local/my-bucket || true
 	docker run --rm --network host minio/mc anonymous set download local/my-bucket
+
+swagger:
+	swag init -g cmd/pankreatitmed/main.go --parseInternal --parseDependency

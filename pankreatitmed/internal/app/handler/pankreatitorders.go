@@ -75,11 +75,24 @@ func (h *Handler) ListPankreatitOrders(c *gin.Context) {
 // @Router       /pankreatitorders/{id} [get]
 func (h *Handler) PankreatitOrderGet(c *gin.Context) {
 	var id request.GetPankreatitOrder
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with your token"})
+		return
+	}
 	if err := c.ShouldBindUri(&id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	res, err := h.svcs.PankreatitOrders.Get(id.ID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if !usr.IsModerator && res.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to get this order(not your order)"})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -125,7 +138,7 @@ func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
 		return
 	}
 	if !usr.IsModerator && o.CreatorID != usr.ID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to form this order(not your order)"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to update this order(not your order)"})
 		return
 	}
 	if err := h.svcs.PankreatitOrders.Update(id.ID, &mo); err != nil {
@@ -229,8 +242,22 @@ func (h *Handler) PankreatitOrderComplete(c *gin.Context) {
 // @Router       /pankreatitorders/{id} [delete]
 func (h *Handler) PankreatitOrderDelete(c *gin.Context) {
 	var id request.GetPankreatitOrder
+	usr, check := authctx.Get(c)
+	if !check {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with your token"})
+		return
+	}
 	if err := c.ShouldBindUri(&id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	o, err := h.svcs.PankreatitOrders.Get(id.ID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	if !usr.IsModerator && o.CreatorID != usr.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "u don't have permission to delete this order(not your order)"})
 		return
 	}
 	if err := h.svcs.PankreatitOrders.Delete(id.ID); err != nil {

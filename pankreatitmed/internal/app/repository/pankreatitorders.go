@@ -104,7 +104,7 @@ func (r *Repository) UpdatePankreatitOrder(id uint, order *request.UpdatePankrea
 		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return gorm.ErrInvalidData
 	}
 	return nil
 }
