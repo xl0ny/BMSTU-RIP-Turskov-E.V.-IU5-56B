@@ -49,7 +49,7 @@ func CritertionToSendCriterionLink(crit *ds.Criterion) response.SendCriterion {
 		Status:      crit.Status,
 		Unit:        crit.Unit,
 		RefLow:      crit.RefLow,
-		RefHigh:     crit.RefLow,
+		RefHigh:     crit.RefHigh,
 	}
 }
 
@@ -66,7 +66,7 @@ func CritertionToSendCriterion(crit ds.Criterion) response.SendCriterion {
 		Status:      crit.Status,
 		Unit:        crit.Unit,
 		RefLow:      crit.RefLow,
-		RefHigh:     crit.RefLow,
+		RefHigh:     crit.RefHigh,
 	}
 }
 
