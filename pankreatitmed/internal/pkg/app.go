@@ -39,10 +39,11 @@ func (a *Application) RunApp() {
 
 	a.Handler.RegisterRoutes(a.Router)
 	//a.Handler.RegisterStatic(a.Router)
-	
+
 	a.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	serverAddress := fmt.Sprintf("%s:%d", a.Config.ServiceHost, a.Config.ServicePort)
+	fmt.Println(serverAddress)
 	if err := a.Router.Run(serverAddress); err != nil {
 		logrus.Fatal(err)
 	}
